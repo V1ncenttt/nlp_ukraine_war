@@ -1,10 +1,7 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
+ <img width=100px height=100px src="img/ukr_flag.png" alt="Project logo"></a>
 </p>
-
-<h3 align="center">Project Title</h3>
-
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
@@ -13,12 +10,6 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
-
-
-<p align="center"> Few lines describing your project.
-    <br> 
-</p>
-
 
 # Ukrainian War: a global opinion analysis using twitter data
 
