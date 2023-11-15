@@ -15,8 +15,8 @@ This GitLab project aims to conduct an opinion analysis on the War in Ukraine ba
 
 ## Project Structure
 
-1. **Data Collection:**
-   - The `data_collection` directory contains scripts and tools used to collect tweets related to the War in Ukraine from the Twitter API.
+1. **Data:**
+   - The `data` directory contains tweets related to the War in Ukraine found on an online database in csv format.
 
 2. **Data Preprocessing:**
    - The `data_preprocessing` directory includes code for cleaning, filtering, and preparing the raw tweet data for analysis.
