@@ -1,3 +1,25 @@
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
+</p>
+
+<h3 align="center">Project Title</h3>
+
+<div align="center">
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+</div>
+
+
+<p align="center"> Few lines describing your project.
+    <br> 
+</p>
+
+
 # Ukrainian War: a global opinion analysis using twitter data
 
 ## Overview
@@ -39,11 +61,17 @@ This GitLab project aims to conduct an opinion analysis on the War in Ukraine ba
    ```bash
    git clone https://gitlab-cw4.centralesupelec.fr/groupe-7-les-bg/war_ukraine.git
 
-2. **Run Analysis Scripts:**
-    - Follow the instructions in each subdirectory to run the scripts for data collection, preprocessing, sentiment analysis, and opinion trends.
+2. **Install the necessary packages:**
+   ```bash
+   make init
 
-3. **Explore Results:**
-    - Check the results directory for the final outputs of the analysis. This could include generated reports, visualizations, and any other relevant findings.
+3. **Run the project:**
+   ```bash
+   make build
+
+3. **Run unit tests:**
+   ```bash
+   make test
 
 ## Contributing
 If you'd like to contribute to this project, feel free to fork the repository, create a new branch, make your changes, and submit a pull request. Make sure to follow the project's coding standards and guidelines.
