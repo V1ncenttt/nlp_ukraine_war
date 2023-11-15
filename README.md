@@ -28,10 +28,10 @@ This GitLab project aims to conduct an opinion analysis on the War in Ukraine ba
    - The `opinion_trends` directory focuses on extracting trends and patterns from the analyzed data. This involves identifying common opinions, key themes, and changes in sentiment over time.
 
 5. **Visualization:**
-   - The `visualization` directory contains code for creating visual representations of the analyzed data. This could include graphs, charts, and other visualizations to help understand and communicate the findings.
+   - The `visualization` directory contains code for creating visual representations of the analyzed data.
 
 6. **Results:**
-   - The `results` directory stores the final results of the analysis. This may include summary reports, CSV files with sentiment scores, and visualizations.
+   - The `results` directory stores the final results of the analysis. This will take the form of a graphical interface for users to interact with.
 
 ## How to Use
 
