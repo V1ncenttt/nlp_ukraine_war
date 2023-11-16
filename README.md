@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=100px height=100px src="img/ukr_flag.png" alt="Project logo"></a>
+ <img width=100px height=100px src="src/assets/ukr_flag.png" alt="Project logo"></a>
 </p>
 <div align="center">
 
