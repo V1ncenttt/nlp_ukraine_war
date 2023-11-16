@@ -1,7 +1,6 @@
-class Main:
-    def __init__(self) -> None:
-        pass
-
+from src.view import View
 
 if __name__ == "__main__":
-    pass
+    #Run the Dash app
+    v = View()
+    v.run()
