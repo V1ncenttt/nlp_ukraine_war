@@ -1,5 +1,5 @@
 import pandas as pd
-
+import re
 
 class Model:
     def __init__(self, dataset):
@@ -8,10 +8,19 @@ class Model:
         for m in useless:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
-        print(self.data.columns)
-        
+        self.delete_links()
+    def delete_links(self):
+    # Utiliser une expression régulière pour rechercher les liens
+        regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+    # Remplacer les liens par une chaîne vide
+        self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
+        print(self.data['tweet'][11])
+
+
+
+    
+    
     
 
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    
