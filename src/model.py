@@ -3,7 +3,6 @@ from textblob import TextBlob
 from geopy.geocoders import OpenCage
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
-from geopy.geocoders import Nominatim
 import re
 import ast
 
