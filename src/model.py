@@ -34,7 +34,15 @@ class Model:
         list_sorted_id = df_sorted['username'].tolist()[:15]   
         print("List sorted IDs by favourite tweets:", list_sorted_id)
     
-
+        self.delete_links()
+        self.extract_hashtags()
+    
+    def sort_retweets(self):
+        df_sort = self.data.sort_values(by = "retweetcount", ascending=False)
+        print(df_sort)
+        list_sorted_name = df_sort['username'].tolist()[:20]
+        print("List of users with the most retweets:", list_sorted_name)
+    
     def delete_links(self):
     # Utiliser une expression régulière pour rechercher les liens
         regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -59,4 +67,5 @@ class Model:
     
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
+    M.sort_retweets()
     
