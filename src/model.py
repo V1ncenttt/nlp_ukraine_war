@@ -26,7 +26,7 @@ class Model:
         self.data['favorite_count'] = self.data['favorite_count'].astype(int)
         df_sorted = self.data.sort_values(by='favorite_count', ascending=False)
         print(df_sorted)
-        list_sorted_id = df_sorted['username'].tolist()[:10]   
+        list_sorted_id = df_sorted['username'].tolist()[:15]   
         print("List sorted IDs by favourite tweets:", list_sorted_id)
     
 if __name__=='__main__':
