@@ -1,5 +1,8 @@
 import pandas as pd
 from textblob import TextBlob
+from geopy.geocoders import OpenCage
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.geocoders import Nominatim
 from geopy.geocoders import Nominatim
 import re
 import ast
@@ -60,10 +63,46 @@ class Model:
     def __str__(self) -> str:
         return str(self.data)
 
+        print(self.data['tweet'][11])
+
+  
+      
+
+    def find_country(self, city):
+        cache={}
+        
+        if city in cache:
+            return cache[city]
+            
+        if pd.isnull(city) or (not isinstance(city, str)) or (not city.strip()):
+            return ""
+        
+        geolocator = Nominatim(user_agent="mon_application")
+
+        try:
+            location = geolocator.geocode(city)
+            if location:
+                country = location.address.split(",")[-1].strip()
+                cache[city]=country
+                return country
+            if location=='':
+                return " "
+            else:
+                return "Emplacement non trouvé"
+            
+        except Exception as e:
+            return f"Une erreur s'est produite : {str(e)}"
+    
+    def apply_find_country(self):
+        self.data['location']=self.data.head(5)['location'].apply(lambda x: self.find_country(x))
+        return self.data
+    
     def getData(self) -> None:
         return self.data
     
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
+    M.apply_find_country()
+    print(M.data['location'])
     M.sort_retweets()
     
