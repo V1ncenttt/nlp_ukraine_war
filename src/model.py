@@ -1,5 +1,8 @@
 import pandas as pd
 from textblob import TextBlob
+from geopy.geocoders import OpenCage
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.geocoders import Nominatim
 
 
 import re
@@ -13,6 +16,7 @@ class Model:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
         self.addSadness()
+        
  
         
     def sad(self, tweet):
@@ -32,6 +36,7 @@ class Model:
         print("List sorted IDs by favourite tweets:", list_sorted_id)
     
         self.delete_links()
+        
     def delete_links(self):
     # Utiliser une expression régulière pour rechercher les liens
         regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -39,15 +44,42 @@ class Model:
         self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
         print(self.data['tweet'][11])
 
+  
+      
 
+    def find_country(self, city):
+        cache={}
+        
+        if city in cache:
+            return cache[city]
+            
+        if pd.isnull(city) or (not isinstance(city, str)) or (not city.strip()):
+            return ""
+        
+        geolocator = Nominatim(user_agent="mon_application")
 
+        try:
+            location = geolocator.geocode(city)
+            if location:
+                country = location.address.split(",")[-1].strip()
+                cache[city]=country
+                return country
+            if location=='':
+                return " "
+            else:
+                return "Emplacement non trouvé"
+            
+        except Exception as e:
+            return f"Une erreur s'est produite : {str(e)}"
     
-    
+    def apply_find_country(self):
+        self.data['location']=self.data.head(5)['location'].apply(lambda x: self.find_country(x))
+        return self.data
     
     def getData(self) -> None:
         return self.data
     
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    M.sortByFavourite()
-    
+    M.apply_find_country()
+    print(M.data['location'])
