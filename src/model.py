@@ -34,8 +34,6 @@ class Model:
         list_sorted_id = df_sorted['username'].tolist()[:15]   
         print("List sorted IDs by favourite tweets:", list_sorted_id)
     
-        self.delete_links()
-        self.extract_hashtags()
     
     def sort_retweets(self):
         df_sort = self.data.sort_values(by = "retweetcount", ascending=False)
