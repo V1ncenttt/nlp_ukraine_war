@@ -13,8 +13,8 @@ nltk.download('stopwords')
 M=Model('data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
 df=M.getData()
 #sélection d'un échantillon aléatoire de 50 000 tweets
-df=df.sample(n=50000)
-
+#df=df.sample(n=50000)
+df=df.head(4)
 def generateWordcloud(df):
     if 'hashtags' not in df.columns:
         raise ValueError("La colonne 'hashtags' n'existe pas dans le DataFrame.")
@@ -30,4 +30,4 @@ def generateWordcloud(df):
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.show()
-generateWordcloud(df)
+#generateWordcloud(df)

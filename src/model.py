@@ -1,7 +1,6 @@
 import pandas as pd
 from textblob import TextBlob
-
-
+from geopy.geocoders import Nominatim
 import re
 import ast
 
@@ -13,9 +12,12 @@ class Model:
         for m in useless:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
+        """
         self.addSadness()
- 
-        
+        self.delete_links()
+        self.extract_hashtags()
+        """
+
     def sad(self, tweet):
         blob=TextBlob(tweet)
         return blob.sentiment.polarity<0 
@@ -32,8 +34,7 @@ class Model:
         list_sorted_id = df_sorted['username'].tolist()[:15]   
         print("List sorted IDs by favourite tweets:", list_sorted_id)
     
-        self.delete_links()
-        self.extract_hashtags()
+
     def delete_links(self):
     # Utiliser une expression régulière pour rechercher les liens
         regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -58,5 +59,4 @@ class Model:
     
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    M.sortByFavourite()
     
