@@ -5,8 +5,6 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/gitlab/issues/open/https%3A%2F%2Fgitlab-cw4.centralesupelec.fr%2Fgroupe-7-les-bg%2Fwar_ukraine)](https://gitlab-cw4.centralesupelec.fr/groupe-7-les-bg/war_ukraine/-/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -15,7 +13,7 @@
 
 ## Overview
 
-This GitLab project aims to conduct an opinion analysis on the War in Ukraine based on tweets published in the year 2022. The analysis focuses on extracting sentiments, opinions, and trends expressed on Twitter regarding the conflict.
+This project focuses on conducting a comprehensive sentiment analysis on the War in Ukraine, utilizing a vast dataset of tweets published throughout the year 2022. Our aim is to extract, analyze, and interpret the sentiments, opinions, and emerging trends expressed on Twitter regarding the ongoing conflict. This analysis will provide valuable insights into public perception and the global discourse surrounding the conflict.
 
 ## Contributors
 
@@ -26,25 +24,23 @@ This GitLab project aims to conduct an opinion analysis on the War in Ukraine ba
 - **Gauthier Riquier**
 - **Nicolas Brandel**
 
+## Dataset
+The primary dataset for this project is the "Ukraine Russian Crisis Twitter Dataset," which comprises over 1.2 million tweets. This extensive collection has been meticulously gathered to represent a wide array of perspectives and voices discussing the conflict. The dataset is publicly available on Kaggle and can be accessed through the following link: [Ukraine Russian Crisis Twitter Dataset](https://www.kaggle.com/datasets/bwandowando/ukraine-russian-crisis-twitter-dataset-1-2-m-rows).
+
 ## Project Structure
 
 1. **Data:**
    - The `data` directory contains tweets related to the War in Ukraine found on an online database in csv format.
 
-2. **Data Preprocessing:**
-   - The `data_preprocessing` directory includes code for cleaning, filtering, and preparing the raw tweet data for analysis.
+2. **Src:**
+   - The `src` directory includes code for running the web-aplication and all of the code.
 
-3. **Sentiment Analysis:**
-   - The `sentiment_analysis` directory houses scripts for sentiment analysis on the tweets. Various natural language processing techniques are employed to gauge sentiments expressed in the tweets.
+3. **Tests:**
+   - The `tests` directory houses the code corresponding to the unit and coverage tests.
 
-4. **Opinion Trends:**
-   - The `opinion_trends` directory focuses on extracting trends and patterns from the analyzed data. This involves identifying common opinions, key themes, and changes in sentiment over time.
+4. **ML:**
+   - The `ml` directory focuses on the code needed to construct the text classification models, including the Shallow learning and Transformer-based approaches.
 
-5. **Visualization:**
-   - The `visualization` directory contains code for creating visual representations of the analyzed data.
-
-6. **Results:**
-   - The `results` directory stores the final results of the analysis. This will take the form of a graphical interface for users to interact with.
 
 ## How to Use
 
