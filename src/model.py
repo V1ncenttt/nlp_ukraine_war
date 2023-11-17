@@ -1,5 +1,6 @@
 import pandas as pd
 from textblob import TextBlob
+import geonamescache
 
 
 import re
@@ -39,10 +40,21 @@ class Model:
         self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
         print(self.data['tweet'][11])
 
-
-
+    def get_country_from_location(location):
+        gc = geonamescache.GeonamesCache()
+        cities = gc.get_cities_by_name(location)
+        if cities:
+            city = cities[0]
+            country_code = city['countrycode']
+            country_info = gc.get_countries()[country_code]
+            country_name = country_info['name']
+            return country_name
+        else:
+            print('Error: Location not found in the GeoNames database')
+            return None
     
-    
+    def get_country(self):
+        return self.data['location'].get_country_from_location()
     
     def getData(self) -> None:
         return self.data
@@ -50,4 +62,5 @@ class Model:
 if __name__=='__main__':
     M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
     M.sortByFavourite()
+    M.get_country()
     
