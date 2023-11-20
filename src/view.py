@@ -1,5 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output
+import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from wordcloud import WordCloud, ImageColorGenerator
@@ -26,6 +27,17 @@ body_style = {
     'padding': '20px',
     'fontFamily': 'Open Sans, sans-serif'
 }
+
+fig = go.Figure(data=go.Choropleth(
+    locations=['ITA', 'UK', 'FRA'],  # replace with your actual locations
+    z=[1.0, 2.0, 3.0],  # replace with your actual data
+    locationmode='ISO-3',  # or 'country names' for country-level map
+    colorscale='Reds',
+    autocolorscale=False,
+    text=['Arizona', 'California', 'New York'],  # replace with your actual text
+    marker_line_color='white',
+    colorbar_title="Colorbar Title Goes Here"
+))
 
 external_stylesheets = ['https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap']
 
@@ -57,6 +69,16 @@ class View:
                 ),
                 dcc.Graph(id='sample-graph'),
                 html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
+            dcc.Dropdown(
+                id='sample-dropdown',
+                options=[
+                    {'label': 'Scatter Plot', 'value': 'scatter'},
+                    {'label': 'Line Plot', 'value': 'line'},
+                ],
+                value='scatter'
+            ),
+            dcc.Graph(id='sample-graph'),
+            dcc.Graph(id='choropleth', figure=fig)
             ], style=body_style)
         ])
 
