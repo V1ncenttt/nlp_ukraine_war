@@ -7,9 +7,21 @@ from wordcloud import WordCloud, ImageColorGenerator
 from PIL import Image
 import numpy as np
 from io import BytesIO
-from src.wordcloud_hashtags import generateWordcloud
 import base64
 from src.model import Model
+from src.wordcloud_hashtags import generateWordcloud
+
+# Loading the database from the 'Model' class
+models = {
+    '02/04': Model('data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv'),
+    '08/04': Model('data/Tweets Ukraine/0408_UkraineCombinedTweetsDeduped.csv'),
+    '05/05 to 05/07': Model('data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv'),
+    '19/08': Model('data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv'),
+    '31/08': Model('data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv'),
+    '08/09': Model('data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv'),
+    '15/09': Model('data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv')
+    # Ajoutez d'autres modèles si nécessaire
+}
 
 banner_style = {
     "backgroundColor": "white",
@@ -53,83 +65,59 @@ class View:
         self.setup_callbacks()
 
     def setup_layout(self) -> None:
-        self.app.layout = html.Div(
-            [
-                html.Div(
-                    id="banner",
-                    className="banner",
-                    children=[
-                        html.Img(
-                            src=dash.get_asset_url("ukr_flag.png"),
-                            style={
-                                "height": "50px",
-                                "border-radius": "10px",
-                                "marginRight": "10px",
-                            },
-                        ),
-                        html.Div(
-                            "Ukrainian War: a global opinion analysis using twitter data",
-                            style={"fontSize": "24px", "padding-top": "10px"},
-                        ),
-                    ],
-                    style=banner_style,
+        # Liste des modèles pour le menu déroulant
+        model_options = [{'label': model_name, 'value': model_name} for model_name in models.keys()]
+
+        self.app.layout = html.Div([
+            html.Div(
+                id="banner",
+                className="banner",
+                children=[
+                    html.Img(src=dash.get_asset_url("ukr_flag.png"),
+                             style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
+                    html.Div("Ukrainian War: a global opinion analysis using twitter data",
+                             style={'fontSize': '24px', 'padding-top': '10px'})
+                ],
+                style=banner_style
+            ),
+            html.Div([
+                dcc.Dropdown(
+                    id='model-dropdown',
+                    options=model_options,
+                    value=list(models.keys())[0],  # Par défaut, sélectionnez le premier modèle
+                    style={'width': '50%'}
                 ),
-                html.Div(
-                    [
-                        dcc.Dropdown(
-                            id="sample-dropdown",
-                            options=[
-                                {"label": "Scatter Plot", "value": "scatter"},
-                                {"label": "Line Plot", "value": "line"},
-                                {"label": "WordCloud", "value": "wordcloud"},
-                            ],
-                            value="scatter",
-                        ),
-                        dcc.Graph(id="sample-graph"),
-                        html.Img(
-                            id="wordcloud-image",
-                            style={"width": "100%", "height": "auto"},
-                        ),
-                        dcc.Dropdown(
-                            id="sample-dropdown",
-                            options=[
-                                {"label": "Scatter Plot", "value": "scatter"},
-                                {"label": "Line Plot", "value": "line"},
-                            ],
-                            value="scatter",
-                        ),
-                        dcc.Graph(id="sample-graph"),
-                        dcc.Graph(id="choropleth", figure=fig),
+                dcc.Dropdown(
+                    id='sample-dropdown',
+                    options=[
+                        {'label': 'WordCloud', 'value': 'wordcloud'},
                     ],
-                    style=body_style,
+                    value='scatter'
                 ),
-            ]
-        )
+                #dcc.Graph(id='sample-graph'),
+                html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
+            ], style=body_style)
+        ])
 
     def setup_callbacks(self):
         @self.app.callback(
-            [Output("sample-graph", "figure"), Output("wordcloud-image", "src")],
-            Input("sample-dropdown", "value"),
+            Output('wordcloud-image', 'src'),
+            [Input('sample-dropdown', 'value'),
+             Input('model-dropdown', 'value')]
         )
-        def update_graph(selected_value):
-            # Loading the database from the 'Model' class
-            M = Model("data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv")
-            df = M.getData()
-            # Selecting a random sample of 50,000 tweets
-            df = df.sample(n=100)
+        def update_graph(selected_value, selected_model):
+            # Charger le modèle sélectionné
+            model = models[selected_model]
+            df = model.getData().sample(n=1000)  # Exemple: Sélectionnez un échantillon aléatoire de 1,000 tweets
+
             wordcloud_image = None
 
-            if selected_value == "scatter":
-                fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-            elif selected_value == "line":
-                fig = px.line(df, x="sepal_width", y="sepal_length", color="species")
-            elif selected_value == "wordcloud":
-                fig = {}
+            
+            if selected_value == 'wordcloud':
                 wordcloud_image = self.generate_wordcloud_image(df)
-            else:
-                fig = {}
+           
 
-            return fig, wordcloud_image
+            return wordcloud_image
 
     def generate_wordcloud_image(self, df):
         img_binary = generateWordcloud(df)
@@ -138,3 +126,4 @@ class View:
 
     def run(self):
         self.app.run_server(debug=True)
+
