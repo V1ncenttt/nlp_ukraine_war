@@ -65,8 +65,13 @@ class Model:
 
     def most_active_user(self):
         """
-        This function returns a list of the 20 most active users
+        This function returns a list of the 20 most active users ('username' column)
         of the studied DataFrame.
+        
+        It counts each user's number of tweets and takes the 20 highest values in a list.
+
+        Returns :
+            String : "List of the most active users :" and the list.
         """
         # List of each user's number of tweets
         compteur = self.data['username'].value_counts()
