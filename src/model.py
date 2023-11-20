@@ -127,7 +127,7 @@ class Model:
  
       
 
-    def find_country(self, city: str)-> str:
+###    def find_country(self, city: str)-> str:
         """
         Finds the country associated with a given city using geocoding.
 
