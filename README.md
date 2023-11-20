@@ -53,42 +53,47 @@ The primary dataset for this project is the "Ukraine Russian Crisis Twitter Data
    ```bash
    make init
 
+3. **Download the model and place it:**
+   Click [here](https://www.kaggle.com/datasets/bwandowando/ukraine-russian-crisis-twitter-dataset-1-2-m-rows) to download the model. Once you have downloaded it, simply extract it and place the */model* folder inside the *ml* folder.
+
 **If you have Python3 installed:**
-1. **Run the project:**
+4. **Run the project:**
    ```bash
    make build3
 
-2. **Run unit tests:**
+5. **Run unit tests:**
    ```bash
    make test3
 
 **If you only have Python installed:**
-1. **Run the project:**
+4. **Run the project:**
    ```bash
    make build
 
-2. **Run unit tests:**
+5. **Run unit tests:**
    ```bash
    make test
+
+Enjoy!
 
 ## Requirements ✅
 | Req № | Description                                            | Importance | Current state |
 |--------|--------------------------------------------------------|------------|---------------|
-| 1      | Pre-process the datasets and extract knowledge         | Crucial    | Done          |
-| 2      | Create data visualisations from the dataset            | Crucial    | WIP           |
-| 3      | Perform sentiment analysis from the dataset            | Crucial    | WIP           |
-| 4      | Create a transformer/shallow learning-based tweet classifier (pro Russian/Ukrainian) | Important | WIP |
-| 5      | Make a web-application using dash                      | Important  | WIP           |
-| 6      | Create wordclouds                                      | Important  | Done          |
-| 7      | Implement a cloropleth using geographical data and the classification of the tweets | Important | WIP |
-| 8      | Provide a way for users to easily run the project (Makefile) | Important  | Done      |
-| 9      | Add other plots to the web application                | Medium     | Not started   |
-| 10     | Add unit and coverage testing                          | Medium     | Not started   |
-| 11     | Provide documentation with docstrings and a sphynx wiki | Medium   | Not started   |
-| 12     | Compare other methods of classifiers (rule-based, LSTMs...) | Low     | Not started |
-| 13     | Put the repository in a docker container to run it easily | Low      | Not started   |
-| 14     | Write a project report                                 | Low        | Not started   |
-| 15     | Analyse the datasets as time-series                    | Very Low   | Will not do   |
+| 1      | Pre-process the datasets and extract knowledge 📚       | Crucial    | ✅ Done        |
+| 2      | Create data visualisations from the dataset 📊          | Crucial    | 🚧 WIP         |
+| 3      | Perform sentiment analysis from the dataset 💭          | Crucial    | 🚧 WIP         |
+| 4      | Create a transformer/shallow learning-based tweet classifier (pro Russian/Ukrainian) 🐦 | Important | ✅ Done |
+| 5      | Make a web-application using dash 🌐                    | Important  | 🚧 WIP         |
+| 6      | Create wordclouds ☁️                                    | Important  | ✅ Done        |
+| 7      | Implement a cloropleth using geographical data and the classification of the tweets 🗺️ | Important | 🚧 WIP |
+| 8      | Provide a way for users to easily run the project (Makefile) 🏃 | Important  | ✅ Done    |
+| 9      | Add other plots to the web application 📈               | Medium     | ❌ Not started |
+| 10     | Add unit and coverage testing 🧪                        | Medium     | 🚧 WIP |
+| 11     | Provide documentation with docstrings and a sphynx wiki 📝 | Medium   | ❌ Not started |
+| 12     | Compare other methods of classifiers (rule-based, LSTMs...) 🔄 | Low     | ❌ Not started |
+| 13     | Put the repository in a docker container to run it easily 🐳 | Low      | ❌ Not started |
+| 14     | Write a project report 📄                                | Low        | ❌ Not started |
+| 15     | Analyse the datasets as time-series ⏳                   | Very Low   | ❌ Will not do |
 
 ## Contributing 👫
 If you'd like to contribute to this project, feel free to fork the repository, create a new branch, make your changes, and submit a pull request. Make sure to follow the project's coding standards and guidelines.
