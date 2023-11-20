@@ -63,10 +63,10 @@ class Model:
         list_sorted_name = df_sort['username'].tolist()[:20]
         print("List of users with the most retweets:", list_sorted_name)
 
-    def most_active_user(self) -> str:
+    def most_active_user(self):
         """
         This function returns a list of the 20 most active users
-        of the studied DataFrame
+        of the studied DataFrame.
         """
         # List of each user's number of tweets
         compteur = self.data['username'].value_counts()
