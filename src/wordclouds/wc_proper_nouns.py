@@ -17,8 +17,10 @@ data = pd.read_csv("../../data/0908_UkraineCombinedTweetsDeduped.csv").head(1000
 
 # Fonction pour extraire les noms propres du texte
 def nomsPropres(text: str) -> str:
-    """This function takes a string as an argument and return
-    a string with all the proper nouns of the initial text"""
+    """
+    This function takes a string as an argument and returns
+    a string with all the proper nouns of the initial text
+    """
     doc = nlp(text)
     return [ent.text for ent in doc.ents if ent.label_ == "PERSON"]
 
