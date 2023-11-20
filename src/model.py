@@ -10,7 +10,7 @@ class Model:
     def __init__(self, dataset : pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset)
         useless=["userid", "tweetid", "following", "totaltweets", "original_tweet_id", "original_tweet_user_id", "original_tweet_username", "in_reply_to_status_id", "in_reply_to_user_id", "in_reply_to_screen_name", "is_quote_status", "quoted_status_id", "quoted_status_userid", "quoted_status_username", "extractedts", "coordinates"]
-    #removing unnecessary columns
+        #removing unnecessary columns
         for m in useless:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
@@ -40,14 +40,14 @@ class Model:
         Returns:
             None
         """
-    # Convert 'favorite_count' column to integer
+        # Convert 'favorite_count' column to integer
         self.data['favorite_count'] = self.data['favorite_count'].astype(int)
 
-    # Sort DataFrame based on 'favorite_count' in descending order
+        # Sort DataFrame based on 'favorite_count' in descending order
         df_sorted = self.data.sort_values(by='favorite_count', ascending=False)
         print(df_sorted)
 
-    # Extract the usernames of the top 15 users with the most favorite tweets
+        # Extract the usernames of the top 15 users with the most favorite tweets
         list_sorted_id = df_sorted['username'].tolist()[:15]
         print("List sorted IDs by favorite tweets:", list_sorted_id)
 
@@ -67,7 +67,7 @@ class Model:
          
         df_sort = self.data.sort_values(by = "retweetcount", ascending=False)
         print(df_sort)
-    # Extract the usernames of the top 20 users with the most retweets
+        # Extract the usernames of the top 20 users with the most retweets
         list_sorted_name = df_sort['username'].tolist()[:20]
         print("List of users with the most retweets:", list_sorted_name)
     
@@ -81,9 +81,9 @@ class Model:
             Returns:
                 None
             """
-    #Use a regular expression to find links
+        #Use a regular expression to find links
             regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-    #Replace links with empty string
+        #Replace links with empty string
             self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
         
     def extract_hashtags(self):
@@ -102,11 +102,11 @@ class Model:
         Raises:
             ValueError: If the 'hashtags' column is not present in the DataFrame.
         """
-    #See if the 'hashtags' column exists in the DataFrame
+        #See if the 'hashtags' column exists in the DataFrame
         if 'hashtags' not in self.data.columns:
             raise ValueError("La colonne 'hashtags' n'existe pas dans le DataFrame.")
          
-    #Convert JSON strings to Python lists
+        #Convert JSON strings to Python lists
         self.data['hashtags'] = self.data['hashtags'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else [])
         self.data['hashtags'] = self.data['hashtags'].apply(lambda x: [tag['text'] for tag in x] if isinstance(x, list) else [])
         return self.data
@@ -140,20 +140,20 @@ class Model:
                 "Emplacement non trouvé" if the location is not found;
              An error message if an exception occurs during the geocoding process.
         """
-    # A cache dictionary to store previously found city-country mappings for efficiency
+        # A cache dictionary to store previously found city-country mappings for efficiency
         cache={}
         
-    # Check if the city is already in the cache and return the country if found
+        # Check if the city is already in the cache and return the country if found
  
         if city in cache:
             return cache[city]
         
-    # Check if the provided city is invalid, empty, or not a string
+        # Check if the provided city is invalid, empty, or not a string
         
         if pd.isnull(city) or (not isinstance(city, str)) or (not city.strip()):
             return ""
             
-    # Initialize a geolocator with a user agent for geocoding
+        # Initialize a geolocator with a user agent for geocoding
 
         geolocator = Nominatim(user_agent="mon_application")
 
