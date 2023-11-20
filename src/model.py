@@ -68,8 +68,10 @@ class Model:
         This function returns a list of the 20 most active users
         of the studied DataFrame
         """
-        # List of the most active users in the decreasing order
+        # List of each user's number of tweets
         compteur = self.data['username'].value_counts()
+
+        # Takes the 20 highest values
         mostActiveUsers = compteur.head(20)
         print("List of the most active users :",mostActiveUsers)   
 
