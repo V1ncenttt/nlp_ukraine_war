@@ -12,7 +12,6 @@ class Model:
         self.add_sadness()
         self.extract_hashtags()
         
-
     def sad(self, tweet: str):
         blob=TextBlob(tweet)
         return blob.sentiment.polarity<0 
