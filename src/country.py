@@ -70,18 +70,19 @@ class Country:
         # List of addresses you want to geocode
         locations = list(self.data["location"])
 
-        # Number of parallel threads to use
+        # Number of parallel threads to use (if not specified in ThreadPoolExecutror uses nb cpu times 5)
         num_threads = 10
 
-        futures = []
-        countries = []
-
         with ThreadPoolExecutor() as executor:
-            for location in locations:
-                future = executor.submit(self.find_country, location)
-                futures.append(future)
-                countries.append(future.result())
-                print(future.result())
+            # Use list comprehension to submit geocoding tasks to the executor
+            futures = [executor.submit(self.find_country, location) for location in locations]
+
+            # Wait for all tasks to complete and retrieve the results
+            countries = [future.result() for future in futures]
+            
+        #Replaces location of tweets by the countries they are associated to
+        self.data["location"] = countries
+        return self.data
 
 if __name__=='__main__':
     C = Country('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
