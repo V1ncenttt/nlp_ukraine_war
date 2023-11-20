@@ -62,7 +62,17 @@ class Model:
         # Extract the usernames of the top 20 users with the most retweets
         list_sorted_name = df_sort['username'].tolist()[:20]
         print("List of users with the most retweets:", list_sorted_name)
-        
+
+    def most_active_user(self) -> str:
+        """
+        This function returns a list of the 20 most active users
+        of the studied DataFrame
+        """
+        # List of the most active users in the decreasing order
+        compteur = self.data['username'].value_counts()
+        mostActiveUsers = compteur.head(20)
+        print("List of the most active users :",mostActiveUsers)   
+
     def extract_hashtags(self):
         """
         Extracts hashtags from the 'hashtags' column in the DataFrame.
