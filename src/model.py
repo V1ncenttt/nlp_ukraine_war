@@ -129,11 +129,11 @@ class Model:
             String : "List of the most active users :" and the list.
         """
         # List of each user's number of tweets
-        compteur = self.data['username'].value_counts()
+        counts = self.data['username'].value_counts()
 
         # Takes the 20 highest values
-        mostActiveUsers = compteur.head(20).index.tolist()
-        print("List of the most active users :",mostActiveUsers)   
+        active_users = counts.head(20).index.tolist()
+        print("List of the most active users :",active_users)   
 
     def most_oriented_countries(self):
         '''
