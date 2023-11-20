@@ -1,5 +1,5 @@
-
 from src.model import Model
+
 
 class Controller:
     def __init__(self):
@@ -9,7 +9,6 @@ class Controller:
         # Call a method from the model
         self.model.some_method()
 
-if __name__ ==  "__main__":
+
+if __name__ == "__main__":
     controller = Controller()
-
-

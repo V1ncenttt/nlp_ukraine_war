@@ -23,14 +23,14 @@ if __name__ == "__main__":
     text = " ".join(i for i in data["text"])
 
     # Load the Ukrainian flag image as a mask
-    mask = Image.open('drapeau-ukraine.png').convert('RGBA')
-    white_bg = Image.new('RGBA', mask.size, 'WHITE')
-    white_bg.paste(mask, (0,0), mask)
-    white_bg.convert('RGB')
+    mask = Image.open("drapeau-ukraine.png").convert("RGBA")
+    white_bg = Image.new("RGBA", mask.size, "WHITE")
+    white_bg.paste(mask, (0, 0), mask)
+    white_bg.convert("RGB")
     ukraine_shape_mask = np.array(white_bg)
 
     # Colors of the wordcloud
-    custom_colors = ['royalblue', 'gold']
+    custom_colors = ["royalblue", "gold"]
     custom_cmap = ListedColormap(custom_colors)
 
     # Creating wordcloud

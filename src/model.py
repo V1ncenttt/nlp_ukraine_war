@@ -3,24 +3,100 @@ from textblob import TextBlob
 from geopy.geocoders import OpenCage
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
-import re
+import torch
 import ast
+from transformers import BertTokenizer, BertForSequenceClassification
+from torch.utils.data import DataLoader, TensorDataset
+
 
 class Model:
-    def __init__(self, dataset : pd.DataFrame) -> None:
-        self.data = pd.read_csv(dataset)
-        self.data=self.data.sample(n=1000)
-        useless=["userid", "tweetid", "following", "totaltweets", "original_tweet_id", "original_tweet_user_id", "original_tweet_username", "in_reply_to_status_id", "in_reply_to_user_id", "in_reply_to_screen_name", "is_quote_status", "quoted_status_id", "quoted_status_userid", "quoted_status_username", "extractedts", "coordinates"]
-        #removing unnecessary columns
+    def __init__(self, dataset: pd.DataFrame) -> None:
+        self.data = pd.read_csv(dataset, low_memory=False)
+        self.data = self.data.sample(n=1000)
+        useless = [
+            "userid",
+            "tweetid",
+            "following",
+            "totaltweets",
+            "original_tweet_id",
+            "original_tweet_user_id",
+            "original_tweet_username",
+            "in_reply_to_status_id",
+            "in_reply_to_user_id",
+            "in_reply_to_screen_name",
+            "is_quote_status",
+            "quoted_status_id",
+            "quoted_status_userid",
+            "quoted_status_username",
+            "extractedts",
+            "coordinates",
+        ]
+        # removing unnecessary columns
         for m in useless:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
-        
-        
+
+        self.loadModel()
         self.add_polarity()
         self.add_sadness()
         self.extract_hashtags()
-        
+        self.apply_tweet_position()
+
+    def loadModel(self) -> None:
+        """
+        Loads the pre-trained BERT model and tokenizer.
+
+        Returns:
+            None: Simply loads and prepares the model and tokenizer for use.
+        """
+        self.model = BertForSequenceClassification.from_pretrained(
+            "../ml/model"
+        )  # Load out pre-trained model
+        self.tokenizer = BertTokenizer.from_pretrained("../ml/model")
+        self.device = torch.device(
+            "mps" if torch.backends.mps.is_available() else "cpu"
+        )  # Optimise the model for the device
+        self.model.to(self.device)
+        self.model.eval()  # Load the model in eval/production mode
+
+    def apply_tweet_position(self) -> None:
+        """
+        Classifies the text in the 'text' column of the instance's DataFrame using our pre-trained BERT model.
+
+        This method tokenizes the text using the batch_encode_plus method of the tokenizer,
+        processes it in batches using a DataLoader, and applies the pre-trained model to
+        each batch to predict the sentiment/conflict position. The predictions are then
+        appended to the DataFrame in a new column 'conflict_position'.
+        Returns:
+            None: Modifies the instance's DataFrame in place, adding a 'conflict_position' column with predictions.
+        """
+        tokens = self.tokenizer.batch_encode_plus(
+            self.data["text"].tolist(),
+            max_length=128,
+            padding=True,
+            truncation=True,
+            return_tensors="pt",
+        )  # Tokenize the whole dataset
+
+        dataset = TensorDataset(tokens["input_ids"], tokens["attention_mask"])
+        dataloader = DataLoader(
+            dataset, batch_size=32
+        )  # Prepare the dataloader for batch processing
+
+        positions = []
+        with torch.no_grad():
+            for batch in dataloader:  # Make the predictions in batch
+                input_ids, attention_mask = [
+                    b.to(self.device) for b in batch
+                ]  # Load the tensors in the selected device
+                outputs = self.model(input_ids, attention_mask=attention_mask)
+                logits = outputs.logits
+                preds = torch.argmax(logits, dim=1).cpu().numpy()
+                positions.extend(preds)
+
+        # Add the predictions to the dataset
+        self.data["conflict_position"] = positions
+
     def polarity(self, tweet: str):
         """
         Calculate the polarity of a given text.
@@ -34,10 +110,10 @@ class Model:
         Returns:
         float: The polarity of the text.
         """
-        blob=TextBlob(tweet)
+        blob = TextBlob(tweet)
         return blob.sentiment.polarity
-    
-    def get_average_polarity_for_country(self, country:str) -> float:
+
+    def get_average_polarity_for_country(self, country: str) -> float:
         """
         Calculate the average polarity per country.
 
@@ -47,8 +123,8 @@ class Model:
         Returns:
         float: float mapping country names to average polarity.
         """
-        return self.data[self.data['location']==country]['polarity'].mean()
-    
+        return self.data[self.data["location"] == country]["polarity"].mean()
+
     def add_polarity(self):
         """
         Add a 'polarity' column to the dataset.
@@ -56,11 +132,11 @@ class Model:
         This method applies the 'polarity' method to the 'text' column of the dataset, and stores the result in a new 'polarity' column.
         The 'polarity' column will contain the polarity of each tweet.
         """
-        self.data["polarity"]=self.data["text"].apply(lambda x: self.polarity(x))
-    
+        self.data["polarity"] = self.data["text"].apply(lambda x: self.polarity(x))
+
     def add_sadness(self):
-        self.data["sadness"]=self.data["text"].apply(lambda x: self.polarity(x) <0)
-        
+        self.data["sadness"] = self.data["text"].apply(lambda x: self.polarity(x) < 0)
+
     def sort_by_favourite(self):
         """
         Sorts the DataFrame based on the 'favorite_count' column in descending order.
@@ -75,52 +151,51 @@ class Model:
             None
         """
         # Convert 'favorite_count' column to integer
-        self.data['favorite_count'] = self.data['favorite_count'].astype(int)
+        self.data["favorite_count"] = self.data["favorite_count"].astype(int)
 
         # Sort DataFrame based on 'favorite_count' in descending order
-        df_sorted = self.data.sort_values(by='favorite_count', ascending=False)
+        df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
         print(df_sorted)
 
         # Extract the usernames of the top 15 users with the most favorite tweets
-        list_sorted_id = df_sorted['username'].tolist()[:15]
+        list_sorted_id = df_sorted["username"].tolist()[:15]
         print("List sorted IDs by favorite tweets:", list_sorted_id)
 
-    
     def sort_retweets(self):
         """
-            Sorts the DataFrame based on the 'retweetcount' column in descending order and prints the sorted DataFrame.
+        Sorts the DataFrame based on the 'retweetcount' column in descending order and prints the sorted DataFrame.
 
-            This method sorts the DataFrame stored in the 'data' attribute based on the 'retweetcount' column in descending order.
-            The sorted DataFrame is then printed to the console.
+        This method sorts the DataFrame stored in the 'data' attribute based on the 'retweetcount' column in descending order.
+        The sorted DataFrame is then printed to the console.
 
-            Additionally, it extracts the usernames of the top 20 users with the most retweets and prints the list.
+        Additionally, it extracts the usernames of the top 20 users with the most retweets and prints the list.
 
-            Returns:
-                 None
+        Returns:
+             None
         """
-         
-        df_sort = self.data.sort_values(by = "retweetcount", ascending=False)
+
+        df_sort = self.data.sort_values(by="retweetcount", ascending=False)
         print(df_sort)
         # Extract the usernames of the top 20 users with the most retweets
-        list_sorted_name = df_sort['username'].tolist()[:20]
+        list_sorted_name = df_sort["username"].tolist()[:20]
         print("List of users with the most retweets:", list_sorted_name)
 
     def most_active_user(self):
         """
         This function returns a list of the 20 most active users ('username' column)
         of the studied DataFrame.
-        
+
         It counts each user's number of tweets and takes the 20 highest values in a list.
 
         Returns :
             String : "List of the most active users :" and the list.
         """
         # List of each user's number of tweets
-        compteur = self.data['username'].value_counts()
+        compteur = self.data["username"].value_counts()
 
         # Takes the 20 highest values
         mostActiveUsers = compteur.head(20)
-        print("List of the most active users :",mostActiveUsers)   
+        print("List of the most active users :", mostActiveUsers)
 
     def extract_hashtags(self):
         """
@@ -138,10 +213,14 @@ class Model:
         Raises:
             ValueError: If the 'hashtags' column is not present in the DataFrame.
         """
-        
-        #Convert JSON strings to Python lists
-        self.data['hashtags'] = self.data['hashtags'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else [])
-        self.data['hashtags'] = self.data['hashtags'].apply(lambda x: [tag['text'] for tag in x] if isinstance(x, list) else [])
+
+        # Convert JSON strings to Python lists
+        self.data["hashtags"] = self.data["hashtags"].apply(
+            lambda x: ast.literal_eval(x) if isinstance(x, str) else []
+        )
+        self.data["hashtags"] = self.data["hashtags"].apply(
+            lambda x: [tag["text"] for tag in x] if isinstance(x, list) else []
+        )
         return self.data
 
     def __str__(self) -> str:
@@ -155,13 +234,11 @@ class Model:
             str: A string representation of the DataFrame stored in the 'data' attribute.
         """
         return str(self.data)
-    
+
     def getData(self) -> pd.DataFrame:
         return self.data
-    
-if __name__=='__main__':
-    M=Model('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    M.apply_find_country()
-    print(M.data['location'])
-    M.sort_retweets()
-    
+
+
+if __name__ == "__main__":
+    M = Model("../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv")
+    print(M.data["conflict_position"].value_counts())
