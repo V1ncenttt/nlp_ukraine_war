@@ -77,11 +77,11 @@ class DataPreproccessing:
             countries = [future.result() for future in futures]
             
         #Replaces location of tweets by the countries they are associated to
-        self.data["location"] = countries
+        self.data["Country"] = countries
     
     def country_iso(self):
         #List of all the countries found (some are None)
-        countries = list(self.data['locations'])
+        countries = list(self.data['Country'])
         iso_codes = []
         for country_name in countries:
             try:
