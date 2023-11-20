@@ -3,10 +3,14 @@ from geopy.geocoders import OpenCage
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
 from concurrent.futures import ThreadPoolExecutor
+import re
+import os
 
-class Country:
+
+class DataPreproccessing:
     def __init__(self, dataset : pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset)
+        self.route = dataset
     
     def find_country(self, city: str)-> str:
         """
@@ -74,7 +78,40 @@ class Country:
         #Replaces location of tweets by the countries they are associated to
         self.data["location"] = countries
         return self.data
+    
+    def delete_links(self):
+        """
+        Removes hyperlinks from the 'text' column in the DataFrame.
+
+        This method uses a regular expression to find hyperlinks in the 'text' column of the DataFrame.
+        It then replaces these hyperlinks with an empty string, modifying the 'tweet' column in place.
+
+        Returns:
+            None
+        """
+        #Use a regular expression to find links
+        regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+        #Replace links with empty string
+        self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
+        
+        return self.data
+
+    def unnecessary_columns(self):
+        useless=["userid", "tweetid", "following", "totaltweets", "original_tweet_id", "original_tweet_user_id", "original_tweet_username", "in_reply_to_status_id", "in_reply_to_user_id", "in_reply_to_screen_name", "is_quote_status", "quoted_status_id", "quoted_status_userid", "quoted_status_username", "extractedts", "coordinates"]
+        #removing unnecessary columns
+        for m in useless:
+            if m in self.data.columns:
+                self.data.drop(m, inplace=True, axis=1)
+        return self.data
+    
+    def back_to_csv(self):
+        self.data.to_csv(os.path.join(self.route, f"{os.path.basename(self.route)}_PROCESS"))
+
+
 
 if __name__=='__main__':
-    C = Country('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
+    C = DataPreproccessing('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
+    C.unnecessary_columns()
+    C.delete_links()
     C.apply_find_country()
+    C.back_to_csv()
