@@ -5,6 +5,7 @@ from geopy.geocoders import Nominatim
 from concurrent.futures import ThreadPoolExecutor
 import re
 import os
+import pycountry
 
 
 class DataPreproccessing:
@@ -44,22 +45,22 @@ class DataPreproccessing:
 
         try:
             # Attempt to geocode the provided city
-            location = geolocator.geocode(city)
+            location = geolocator.geocode(city, language='en')
             # If a location is found, extract the country and update the cache
             if location:
                 country = location.address.split(",")[-1].strip()
                 cache[city]=country
                 return country
-            # If the location is an empty string, return a space character
+            # If the location is an empty string, return None
             if location=='':
-                return " "
+                return None
             else:
-            # If the location is not found, return a specific message
-                return "Emplacement non trouvé"
+            # If the location is not found, return None
+                return None
             
         except Exception as e:
-            # If an exception occurs during the geocoding process, return an error message
-            return f"Une erreur s'est produite : {str(e)}"
+            # If an exception occurs during the geocoding process, return None
+            return None
     
     def apply_find_country(self) -> pd.DataFrame:
         # List of addresses you want to geocode
@@ -77,7 +78,19 @@ class DataPreproccessing:
             
         #Replaces location of tweets by the countries they are associated to
         self.data["location"] = countries
-        return self.data
+    
+    def country_iso(self):
+        #List of all the countries found (some are None)
+        countries = list(self.data['locations'])
+        iso_codes = []
+        for country_name in countries:
+            try:
+                country = pycountry.countries.get(name=country_name)
+                iso_codes.append(country.alpha_2)
+            except AttributeError:
+                # Handle the case where the country name is not found
+                iso_codes.append(None)
+        self.data["ISO"] = iso_codes
     
     def delete_links(self):
         """
@@ -93,8 +106,6 @@ class DataPreproccessing:
         regex_liens = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         #Replace links with empty string
         self.data['tweet']= self.data["text"].apply(lambda x: re.sub(regex_liens, '', str(x)))
-        
-        return self.data
 
     def unnecessary_columns(self):
         useless=["userid", "tweetid", "following", "totaltweets", "original_tweet_id", "original_tweet_user_id", "original_tweet_username", "in_reply_to_status_id", "in_reply_to_user_id", "in_reply_to_screen_name", "is_quote_status", "quoted_status_id", "quoted_status_userid", "quoted_status_username", "extractedts", "coordinates"]
@@ -102,16 +113,27 @@ class DataPreproccessing:
         for m in useless:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
-        return self.data
     
     def back_to_csv(self):
         self.data.to_csv(os.path.join(self.route, f"{os.path.basename(self.route)}_PROCESS"))
+    
+    def preprocess_data(self):
+        self.unnecessary_columns()
+        self.delete_links()
+        self.apply_find_country()
+        self.country_iso()
+        self.back_to_csv()
 
 
 
 if __name__=='__main__':
-    C = DataPreproccessing('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    C.unnecessary_columns()
-    C.delete_links()
-    C.apply_find_country()
-    C.back_to_csv()
+    Data = ["../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0408_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv",
+            "../data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv"]
+    for fichier in Data:
+        D = DataPreproccessing(fichier)
+        D.preprocess_data()
