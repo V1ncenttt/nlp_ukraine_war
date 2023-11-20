@@ -6,7 +6,7 @@ init:
 test:
 	@echo "\033[1mRunning unit tests: \033[0m"
 	@echo "-------------------"
-	@python -m tests.unittests
+	@python -m unittest discover
 	@echo "------------------- "
 	@echo "\033[1mDone! \033[0m"
 
@@ -22,7 +22,7 @@ build:
 test3:
 	@echo "\033[1mRunning unit tests: \033[0m"
 	@echo "-------------------"
-	@python3 -m tests.unittests
+	@python3 -m unittest discover
 	@echo "------------------- "
 	@echo "\033[1mDone! \033[0m"
 
