@@ -29,6 +29,6 @@ test3:
 build3:
 	@echo "\033[1mRunning the app: \033[0m"
 	@echo "-------------------"
-	@python -m src.main
+	@python3 -m src.main
 	@echo "------------------- "
 	@echo "\033[1mDone! \033[0m"
