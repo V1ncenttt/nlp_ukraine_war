@@ -9,6 +9,13 @@ import ast
 class Model:
     def __init__(self, dataset : pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset)
+        self.data=self.data.sample(n=1000)
+        useless=["userid", "tweetid", "following", "totaltweets", "original_tweet_id", "original_tweet_user_id", "original_tweet_username", "in_reply_to_status_id", "in_reply_to_user_id", "in_reply_to_screen_name", "is_quote_status", "quoted_status_id", "quoted_status_userid", "quoted_status_username", "extractedts", "coordinates"]
+        #removing unnecessary columns
+        for m in useless:
+            if m in self.data.columns:
+                self.data.drop(m, inplace=True, axis=1)
+        
         self.add_sadness()
         self.extract_hashtags()
         
@@ -96,10 +103,7 @@ class Model:
         Raises:
             ValueError: If the 'hashtags' column is not present in the DataFrame.
         """
-        #See if the 'hashtags' column exists in the DataFrame
-        if 'hashtags' not in self.data.columns:
-            raise ValueError("La colonne 'hashtags' n'existe pas dans le DataFrame.")
-         
+        
         #Convert JSON strings to Python lists
         self.data['hashtags'] = self.data['hashtags'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else [])
         self.data['hashtags'] = self.data['hashtags'].apply(lambda x: [tag['text'] for tag in x] if isinstance(x, list) else [])
