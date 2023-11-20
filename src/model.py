@@ -63,6 +63,19 @@ class Model:
         list_sorted_name = df_sort['username'].tolist()[:20]
         print("List of users with the most retweets:", list_sorted_name)
 
+    def most_active_countries(self):
+        """
+        This function returns a list of the 10 most active countries
+        of the studied DataFrame.
+        """    
+         # List of each country's number of tweets
+
+        count_countries = self.data['Country'].value_counts()
+        
+        # Takes the 10 highest values
+        mostActiveCountries = count_countries.head(10)
+        print("List of the most active countries :", mostActiveCountries) 
+
     def most_active_user(self):
         """
         This function returns a list of the 20 most active users
