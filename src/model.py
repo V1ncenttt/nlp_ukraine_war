@@ -115,7 +115,7 @@ class Model:
         count_countries = self.data['Country'].value_counts()
         
         # Takes the 10 highest values
-        mostActiveCountries = count_countries.head(10)
+        mostActiveCountries = count_countries.head(10).index.tolist()
         print("List of the most active countries :", mostActiveCountries) 
 
     def most_active_user(self):
@@ -132,8 +132,34 @@ class Model:
         compteur = self.data['username'].value_counts()
 
         # Takes the 20 highest values
-        mostActiveUsers = compteur.head(20)
+        mostActiveUsers = compteur.head(20).index.tolist()
         print("List of the most active users :",mostActiveUsers)   
+
+    def most_oriented_countries(self):
+        '''
+        From a DataFrame, containing the columns 'country' and 'position' 
+        where position = 1 if the country supports Russia and 2 for Ukraine,
+        finds the 5 most oriented countries in the two positions.
+        
+        Returns :
+            The two top 5 of countries (lists) for Ukraine and Russia
+        '''
+        # Creates 2 dataframes : one for each position (Ukraine or Russia)
+        pro_ukraine_df = self.data[self.data['position'] == 2]
+        pro_russia_df = self.data[self.data['position'] == 1]
+
+        # Counts the number of tweets per country in each position
+        ukr_counts = pro_ukraine_df['country'].value_counts()
+        rus_counts = pro_russia_df['country'].value_counts()
+
+        # Takes the top 5 of each count
+        top_ukr_countries = ukr_counts.head(5).index.tolist()
+        top_rus_countries = rus_counts.head(5).index.tolist()
+
+        # Displays the tops
+        print("Top 5 countries in support of Ukraine :", top_ukr_countries)
+        print("Top 5 countries in support of Russia :", top_rus_countries)
+
 
     def extract_hashtags(self):
         """
