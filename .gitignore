@@ -4,7 +4,7 @@ data/
 __pycache__/
 .DS_Store
 
-
+ml/model/
 # Unit test / coverage reports
 htmlcov/
 .tox/
