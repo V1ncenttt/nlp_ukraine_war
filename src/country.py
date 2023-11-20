@@ -58,15 +58,6 @@ class Country:
             return f"Une erreur s'est produite : {str(e)}"
     
     def apply_find_country(self) -> pd.DataFrame:
-        """applies the find_country function to the entire location column
-
-        Returns:
-            pd.DataFrame: the modified location column
-        """
-        self.data['location']=self.data.head(5)['location'].apply(lambda x: self.find_country(x))
-        return self.data
-    
-    def apply_fin_country2(self) -> pd.DataFrame:
         # List of addresses you want to geocode
         locations = list(self.data["location"])
 
@@ -86,4 +77,4 @@ class Country:
 
 if __name__=='__main__':
     C = Country('../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv')
-    C.apply_fin_country2()
+    C.apply_find_country()
