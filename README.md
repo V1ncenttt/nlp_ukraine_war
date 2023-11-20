@@ -53,11 +53,21 @@ The primary dataset for this project is the "Ukraine Russian Crisis Twitter Data
    ```bash
    make init
 
+**If you have Python3 installed:**
+3. **Run the project:**
+   ```bash
+   make build3
+
+4. **Run unit tests:**
+   ```bash
+   make test3
+
+**If you only have Python installed:**
 3. **Run the project:**
    ```bash
    make build
 
-3. **Run unit tests:**
+4. **Run unit tests:**
    ```bash
    make test
 
