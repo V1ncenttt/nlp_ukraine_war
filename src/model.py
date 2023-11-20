@@ -128,53 +128,53 @@ class Model:
       
 
 ###    def find_country(self, city: str)-> str:
-        """
-        Finds the country associated with a given city using geocoding.
-
-        Args:
-             - city (str): The name of the city for which the country needs to be found.
-
-         Returns:
-             - str: The country name if the city is found; an empty string if the city is invalid or not provided;
-                a space character if the location is an empty string;
-                "Emplacement non trouvé" if the location is not found;
-             An error message if an exception occurs during the geocoding process.
-        """
-    # A cache dictionary to store previously found city-country mappings for efficiency
-        cache={}
-        
-    # Check if the city is already in the cache and return the country if found
- 
-        if city in cache:
-            return cache[city]
-        
-    # Check if the provided city is invalid, empty, or not a string
-        
-        if pd.isnull(city) or (not isinstance(city, str)) or (not city.strip()):
-            return ""
-            
-    # Initialize a geolocator with a user agent for geocoding
-
-        geolocator = Nominatim(user_agent="mon_application")
-
-        try:
-            # Attempt to geocode the provided city
-            location = geolocator.geocode(city)
-            # If a location is found, extract the country and update the cache
-            if location:
-                country = location.address.split(",")[-1].strip()
-                cache[city]=country
-                return country
-            # If the location is an empty string, return a space character
-            if location=='':
-                return " "
-            else:
-            # If the location is not found, return a specific message
-                return "Emplacement non trouvé"
-            
-        except Exception as e:
-            # If an exception occurs during the geocoding process, return an error message
-            return f"Une erreur s'est produite : {str(e)}"
+###        """
+###        Finds the country associated with a given city using geocoding.
+###
+###        Args:
+###             - city (str): The name of the city for which the country needs to be found.
+###
+###         Returns:
+###             - str: The country name if the city is found; an empty string if the city is invalid or not provided;
+###                a space character if the location is an empty string;
+###                "Emplacement non trouvé" if the location is not found;
+###             An error message if an exception occurs during the geocoding process.
+###        """
+###    # A cache dictionary to store previously found city-country mappings for efficiency
+###        cache={}
+###        
+###    # Check if the city is already in the cache and return the country if found
+### 
+###        if city in cache:
+###            return cache[city]
+###        
+###    # Check if the provided city is invalid, empty, or not a string
+###        
+###        if pd.isnull(city) or (not isinstance(city, str)) or (not city.strip()):
+###            return ""
+###            
+###    # Initialize a geolocator with a user agent for geocoding
+###
+###        geolocator = Nominatim(user_agent="mon_application")
+###
+###        try:
+###            # Attempt to geocode the provided city
+###            location = geolocator.geocode(city)
+###            # If a location is found, extract the country and update the cache
+###            if location:
+###                country = location.address.split(",")[-1].strip()
+###                cache[city]=country
+###                return country
+###            # If the location is an empty string, return a space character
+###            if location=='':
+###                return " "
+###            else:
+###            # If the location is not found, return a specific message
+###                return "Emplacement non trouvé"
+###            
+###        except Exception as e:
+###            # If an exception occurs during the geocoding process, return an error message
+###            return f"Une erreur s'est produite : {str(e)}"
     
     def apply_find_country(self) -> pd.DataFrame:
         """applies the find_country function to the entire location column
