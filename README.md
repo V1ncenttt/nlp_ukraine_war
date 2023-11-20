@@ -54,23 +54,25 @@ The primary dataset for this project is the "Ukraine Russian Crisis Twitter Data
    make init
 
 3. **Download the model and place it:**
-   - Click [here](https://drive.google.com/file/d/1uavrkWP4_GfNg_MmC9NhG-X0wSuv8Jz8/view?usp=sharing) to download the model. Once you have downloaded it, simply extract it and place the */model* folder inside the *ml* folder.
+   Click [here](https://drive.google.com/file/d/1uavrkWP4_GfNg_MmC9NhG-X0wSuv8Jz8/view?usp=sharing) to download the model. Once you have downloaded it, simply extract it and place the */model* folder inside the *ml* folder.
 
 **If you have Python3 installed:**
-4. **Run the project:**
+
+1. **Run the project:**
    ```bash
    make build3
 
-5. **Run unit tests:**
+2. **Run unit tests:**
    ```bash
    make test3
 
 **If you only have Python installed:**
-4. **Run the project:**
+
+1. **Run the project:**
    ```bash
    make build
 
-5. **Run unit tests:**
+2. **Run unit tests:**
    ```bash
    make test
 
