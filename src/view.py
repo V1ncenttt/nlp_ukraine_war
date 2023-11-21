@@ -119,7 +119,7 @@ class View:
 
             return wordcloud_image
 
-    def generate_wordcloud_image(self, df):
+    def generate_wordcloud_hashtags_image(self, df):
         img_binary = generateWordcloud(df)
         img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
         return img_src
