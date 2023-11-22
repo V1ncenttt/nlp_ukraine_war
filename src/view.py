@@ -9,7 +9,7 @@ import numpy as np
 from io import BytesIO
 import base64
 from src.model import Model
-from src.wordcloud_hashtags import generateWordcloud
+from src.controller import Controller
 
 # Loading the database from the 'Model' class
 models = {
@@ -22,7 +22,8 @@ models = {
     '15/09': Model('data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv')
     # Ajoutez d'autres modèles si nécessaire
 }
-
+C=Controller()
+models= C.models
 banner_style = {
     "backgroundColor": "white",
     "padding": "10px",
