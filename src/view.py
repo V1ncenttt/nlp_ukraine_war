@@ -127,4 +127,3 @@ class View:
 
     def run(self):
         self.app.run_server(debug=True)
-
