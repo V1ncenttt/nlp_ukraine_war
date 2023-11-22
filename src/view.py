@@ -87,6 +87,16 @@ class DashView:
                     ),
                     html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
                 ], style=body_style),
+                html.Div([
+                    dcc.Dropdown(
+                        id='favorite-bar-chart',
+                        options=[
+                            {'label' : 'Bar Chart by Likes', 'value' : 'barchart'},
+                        ],
+                        value='barchart'
+                    ),
+                    dcc.Graph(id='bar_chart', figure=self.sort_and_update_graph())
+                ])
             ], style={'display': 'flex', 'flex-direction': 'column'}),
         ])
 
@@ -113,24 +123,46 @@ class DashView:
         )
         
         return fig
+    
+    def sort_and_update_graph(self, date):
+        user_data=self.controller.favourite_users(date)
+        
+        fig=go.Figure(go.Bar(
+            x=user_data['favourite_count'],
+            y=user_data['list_sorted_id'],
+            marker_colot='rgb(55, 83, 109)',
+        ))
+        
+        fig.update_layour(
+            title='Bar Chart of the Favourite Users',
+            xaxis_title='Likes',
+            yaxis_title='Users'
+            template='plotly_dark'
+        )
+        
+        return fig
 
     def setup_callbacks(self):
         @self.app.callback(
             [Output('wordcloud-image', 'src'),
-             Output('graph-container', 'children')],
+             Output('graph-container', 'children')
+             Output('bar-chart', 'figure')],
             [Input('sample-dropdown', 'value'),
-             Input('model-dropdown', 'value')]
+             Input('model-dropdown', 'value'),
+             Input('favorite-bar-chart', 'value')]
         )
         def update_visualization(selected_value, date):
             wordcloud_image = None
             graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
-
+            bar_chart_figure= None
+            
             if selected_value == 'wordcloud':
                 wordcloud_image = self.controller.generate_wordcloud(date)
             elif selected_value == 'wordcloud2':
                 wordcloud_image = self.controller.generate_classical_wordcloud(date)
-
-            return wordcloud_image, graph_container
+            elif selected_value == 'Bar Chart by Likes':
+                bar_chart_figure = self.sort_and_update_graph(date)
+            return wordcloud_image, graph_container, bar_chart_figure
 
     def run(self):
         self.app.run_server(debug=False)
