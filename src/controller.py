@@ -35,6 +35,11 @@ class Controller:
             "08/09": Model("data/tweets_processed/0908_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
             "15/09": Model("data/tweets_processed/0915_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
             }
+    def get_dates(self) -> list:
+        """ 
+        Returns a list of dates corresponding to the models."""
+        return list(self.models.keys())
+
     def generateWordcloud(self, date):
         """
         Generates a WordCloud based on hashtags in the DataFrame.
