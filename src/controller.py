@@ -12,6 +12,11 @@ import nltk
 import base64
 import spacy
 from spacy.lang.es.stop_words import STOP_WORDS as es_stopwords
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+import plotly.express as px
 
 
 
@@ -183,3 +188,9 @@ class Controller:
         plt.xlabel('Date')
         plt.ylabel('Average polarity of the tweets from the country')
         plt.show()
+        
+    def favourite_users(self, date):
+        model=self.models[date]
+        return model.sort_by_favourite()
+    
+    
