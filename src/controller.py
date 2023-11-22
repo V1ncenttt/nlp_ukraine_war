@@ -39,6 +39,19 @@ class Controller:
     def do_something(self):
         # Call a method from the model
         self.model.some_method()
+    
+    def polarity_over_time(self, country:str):
+        # Getting the average polarity for each day (so each dataframe)
+        average_polarities = []
+        dates = ['02/04','08/04','05/05','19/08','31/08','08/09','15/09']
+        for model in self.models:
+            average_polarities.append(model.get_average_polarity_for_country(country))
+        
+        # Displaying the graph
+        plt.plot(dates,average_polarities)
+        plt.xlabel('Date')
+        plt.ylabel('Average polarity of the tweets from the country')
+        plt.show()
 
 
 if __name__ == "__main__":
