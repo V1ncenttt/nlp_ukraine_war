@@ -7,23 +7,12 @@ from wordcloud import WordCloud, ImageColorGenerator
 from PIL import Image
 import numpy as np
 from io import BytesIO
-import base64
 from src.model import Model
 from src.controller import Controller
 
 # Loading the database from the 'Model' class
-models = {
-    '02/04': Model('data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv'),
-    '08/04': Model('data/Tweets Ukraine/0408_UkraineCombinedTweetsDeduped.csv'),
-    '05/05 to 05/07': Model('data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv'),
-    '19/08': Model('data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv'),
-    '31/08': Model('data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv'),
-    '08/09': Model('data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv'),
-    '15/09': Model('data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv')
-    # Ajoutez d'autres modèles si nécessaire
-}
-C=Controller()
-models= C.models
+
+
 banner_style = {
     "backgroundColor": "white",
     "padding": "10px",
@@ -58,16 +47,25 @@ external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
 ]
 
-
 class View:
     def __init__(self) -> None:
+        self.controller = Controller()
+        self.app = DashView(self.controller)
+
+    
+    def run(self):
+        self.app.run()
+    
+class DashView:
+    def __init__(self, controller) -> None:
         self.app = dash.Dash(__name__)
+        self.controller = controller
         self.setup_layout()
         self.setup_callbacks()
 
     def setup_layout(self) -> None:
         # Liste des modèles pour le menu déroulant
-        model_options = [{'label': model_name, 'value': model_name} for model_name in models.keys()]
+        model_options = [{'label': model_name, 'value': model_name} for model_name in self.controller.get_dates()]
 
         self.app.layout = html.Div([
             html.Div(
@@ -85,7 +83,7 @@ class View:
                 dcc.Dropdown(
                     id='model-dropdown',
                     options=model_options,
-                    value=list(models.keys())[0],  # Par défaut, sélectionnez le premier modèle
+                    value=self.controller.get_dates()[0],  # Par défaut, sélectionnez le premier modèle
                     style={'width': '50%'}
                 ),
                 dcc.Dropdown(
@@ -106,24 +104,18 @@ class View:
             [Input('sample-dropdown', 'value'),
              Input('model-dropdown', 'value')]
         )
-        def update_graph(selected_value, selected_model):
+        def update_graph(selected_value, date):
             # Charger le modèle sélectionné
-            model = models[selected_model]
-            df = model.getData().sample(n=1000)  # Exemple: Sélectionnez un échantillon aléatoire de 1,000 tweets
 
             wordcloud_image = None
 
             
             if selected_value == 'wordcloud':
-                wordcloud_image = self.generate_wordcloud_image(df)
+                wordcloud_image = self.controller.generate_wordcloud(date)
            
 
             return wordcloud_image
 
-    def generate_wordcloud_hashtags_image(self, df):
-        img_binary = generateWordcloud(df)
-        img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
-        return img_src
 
     def run(self):
         self.app.run_server(debug=True)

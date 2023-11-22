@@ -9,6 +9,8 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 import nltk
+import base64
+
 
 
 
@@ -53,7 +55,7 @@ class Controller:
         Raises:
                 ValueError: If the 'hashtags' column is not present in the DataFrame.
         """
-        df=self.models[date]
+        df=self.models[date].data
         # Check if the 'hashtags' column exists in the DataFrame
         if "hashtags" not in df.columns:
             raise ValueError("La colonne 'hashtags' n'existe pas dans le DataFrame.")
@@ -90,33 +92,30 @@ class Controller:
 
         # Get the binary data of the PNG image
         img_binary = img_buffer.getvalue()
+        img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
+        return img_src
 
-        return img_binary
+    def get_polarity_cloropleth_data(self, date):
+        """
+        Generates a DataFrame containing the polarity of each country.
 
-    def do_something(self):
-        # Call a method from the model
-        self.model.some_method()
-    
-    def polarity_over_time(self, country:str):
-        '''
-        Plots the average polarity of the tweets from the country in argument
-        over time (each day corresponding to a dataframe)
-        
-        Returns :
-            A pyplot graph
-        '''
-        # Getting the average polarity for each day (so each dataframe)
-        average_polarities = []
-        dates = ['02/04','08/04','05/05','19/08','31/08','08/09','15/09']
-        for model in self.models:
-            average_polarities.append(model.get_average_polarity_for_country(country))
-        
-        # Displaying the graph
-        plt.plot(dates,average_polarities)
-        plt.xlabel('Date')
-        plt.ylabel('Average polarity of the tweets from the country')
-        plt.show()
+        Args:
+                date (str): The date of the model to use.
+
+        Returns:
+                pandas.DataFrame: The DataFrame containing the polarity of each country.
+        """
+        df=self.models[date].data
+        # Group by country and get the mean polarity of each country
+        polarity_df = df.groupby("ISO")["polarity"].mean().reset_index()
+
+        # Remove countries with no polarity
+        polarity_df = polarity_df[polarity_df["polarity"].notna()]
+
+        iso_list = polarity_df['ISO'].tolist()
+        polarity_list = polarity_df['polarity'].tolist()
+        countries_list = polarity_df['country'].tolist()
+
+        return iso_list, polarity_list, countries_list
 
 
-if __name__ == "__main__":
-    controller = Controller()
