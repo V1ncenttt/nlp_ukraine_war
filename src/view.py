@@ -93,16 +93,24 @@ class DashView:
         loc, position, countries = self.controller.get_polarity_cloropleth_data(date)
         fig = go.Figure(
         data=go.Choropleth(
-            locations=loc,  # replace with your actual locations
-            z=position,  # replace with your actual data
-            locationmode="ISO-3",  # or 'country names' for country-level map
+            locations=loc,  
+            z=position,  
+            locationmode="ISO-3", 
             colorscale="Reds",
             autocolorscale=False,
-            text=countries,  # replace with your actual text
+            text=[f"{country}: {value}" for country, value in zip(countries, position)], 
             marker_line_color="white",
-            colorbar_title="Colorbar Title Goes Here",
+            colorbar_title="Number of pro-russian tweets",
             )
         )
+        fig.update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},  # Reduce margins to use more space
+            geo=dict(
+                projection_scale=5,  # Adjust scale of the map
+                center=dict(lat=0, lon=0),  # Adjust center
+            )
+        )
+        
         return fig
 
     def setup_callbacks(self):
