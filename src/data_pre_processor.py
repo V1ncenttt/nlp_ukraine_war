@@ -7,7 +7,7 @@ import geonamescache
 import swifter
 from functools import lru_cache
 
-class DataPreproccessing:
+class DataPreProcessor:
     def __init__(self, dataset: pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset, low_memory=False)
         
@@ -75,8 +75,10 @@ class DataPreproccessing:
         # List of all the countries found (some are None)
         if country == 'xk':
             return 'XKX'
+
         if country == 'nan' or country == None:
             return None
+
         try:
             nation = pycountry.countries.search_fuzzy(country)[0]
             return nation.alpha_3
@@ -153,16 +155,16 @@ class DataPreproccessing:
 
 if __name__ == "__main__":
     Data = [
-        #"../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0408_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv",
-        "../data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv",
+        #"../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
+        #"../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",
+        #"../data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv",
+        #"../data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv",
+        #"../data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv",
     ]
     for fichier in Data:
-        D = DataPreproccessing(fichier)
+        D = DataPreProcessor(fichier)
         
         D.preprocess_data()
-        print('Done creating all of the preprocessed files')
+    
+    print('Done creating all of the preprocessed files')
