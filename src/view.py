@@ -30,22 +30,13 @@ body_style = {
     "fontFamily": "Open Sans, sans-serif",
 }
 
-fig = go.Figure(
-    data=go.Choropleth(
-        locations=["ITA", "UK", "FRA"],  # replace with your actual locations
-        z=[1.0, 2.0, 3.0],  # replace with your actual data
-        locationmode="ISO-3",  # or 'country names' for country-level map
-        colorscale="Reds",
-        autocolorscale=False,
-        text=["Arizona", "California", "New York"],  # replace with your actual text
-        marker_line_color="white",
-        colorbar_title="Colorbar Title Goes Here",
-    )
-)
+
 
 external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
 ]
+
+
 
 class View:
     def __init__(self) -> None:
@@ -58,6 +49,7 @@ class View:
     
 class DashView:
     def __init__(self, controller) -> None:
+  
         self.app = dash.Dash(__name__)
         self.controller = controller
         self.setup_layout()
@@ -95,8 +87,23 @@ class DashView:
                 ),
                 #dcc.Graph(id='sample-graph'),
                 html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
-            ], style=body_style)
+            ], style=body_style),
+            dcc.Graph(id='choropleth', figure=self.create_cloropleth(self.controller.get_dates()[0]))
         ])
+    def create_cloropleth(self,date):
+        loc, position, countries = self.controller.get_polarity_cloropleth_data(date)
+        fig = go.Figure(
+        data=go.Choropleth(
+            locations=loc,  # replace with your actual locations
+            z=position,  # replace with your actual data
+            locationmode="ISO-3",  # or 'country names' for country-level map
+            colorscale="Reds",
+            autocolorscale=False,
+            text=countries,  # replace with your actual text
+            marker_line_color="white",
+            colorbar_title="Colorbar Title Goes Here",
+            )
+        )
 
     def setup_callbacks(self):
         @self.app.callback(
@@ -118,5 +125,5 @@ class DashView:
 
 
     def run(self):
-        self.app.run_server(debug=True)
+        self.app.run_server(debug=False)
 

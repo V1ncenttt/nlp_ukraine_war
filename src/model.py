@@ -44,11 +44,7 @@ class Model:
             "extractedts",
             "coordinates",
         ]
-        # removing unnecessary columns
-        for m in useless:
-            if m in self.data.columns:
-                self.data.drop(m, inplace=True, axis=1)
-
+        
         self.loadModel()
         self.add_polarity()
         self.add_sadness()
@@ -294,6 +290,3 @@ class Model:
         return self.data
 
 
-if __name__ == "__main__":
-    M = Model("../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv")
-    print(M.data["conflict_position"].value_counts())

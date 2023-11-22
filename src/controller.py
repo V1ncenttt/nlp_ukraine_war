@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud, ImageColorGenerator
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from src.model import Model
 from PIL import Image
 from io import BytesIO
 import numpy as np
@@ -13,30 +12,27 @@ import base64
 
 
 
-
-
 class Controller:
-    """
-    The Controller class that manages multiple models.
+    _instance = None
 
-    This class holds a dictionary of models, each associated with a specific date. 
-    It provides methods to interact with these models.
-
-    Attributes:
-        models (dict): A dictionary where the keys are dates and the values are instances of the Model class,
-        corresponding to a dataset.
-    """
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Controller, cls).__new__(cls)
+            # Initialize any attributes of the instance here if needed
+        return cls._instance
 
     def __init__(self):
+        # Initialization should only occur if the instance hasn't been initialized before
         self.models = {
-            "02/04": Model("data/tweets_processed/0402_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "08/04": Model("data/tweets_processed/0408_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "05/05 to 07/05": Model("data/tweets_processed/0505_to_0507_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "19/08": Model("data/tweets_processed/0819_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "31/08": Model("data/tweets_processed/0831_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "08/09": Model("data/tweets_processed/0908_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            "15/09": Model("data/tweets_processed/0915_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
-            }
+        "02/04": Model("data/tweets_processed/0402_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "08/04": Model("data/tweets_processed/0408_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "05/05 to 07/05": Model("data/tweets_processed/0505_to_0507_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "19/08": Model("data/tweets_processed/0819_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "31/08": Model("data/tweets_processed/0831_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "08/09": Model("data/tweets_processed/0908_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        "15/09": Model("data/tweets_processed/0915_UkraineCombinedTweetsDeduped_PROCESSED.csv"),
+        }
+
     def get_dates(self) -> list:
         """ 
         Returns a list of dates corresponding to the models."""
@@ -107,13 +103,12 @@ class Controller:
         """
         df=self.models[date].data
         # Group by country and get the mean polarity of each country
-        polarity_df = df.groupby("ISO")["polarity"].mean().reset_index()
-
+        polarity_df = df.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == 1).sum() / len(x)).reset_index() 
         # Remove countries with no polarity
-        polarity_df = polarity_df[polarity_df["polarity"].notna()]
+        polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
 
         iso_list = polarity_df['ISO'].tolist()
-        polarity_list = polarity_df['polarity'].tolist()
+        polarity_list = polarity_df['conflict_position'].tolist()
         countries_list = polarity_df['country'].tolist()
 
         return iso_list, polarity_list, countries_list
