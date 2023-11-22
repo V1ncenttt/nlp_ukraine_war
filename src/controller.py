@@ -160,14 +160,15 @@ class Controller:
         """
         df=self.models[date].data
         # Group by country and get the mean polarity of each country
-        polarity_df = df.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == 1).sum() / len(x)).reset_index() 
+        print(df[df['conflict_position'] == 1])
+        polarity_df = df.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == 1).sum()).reset_index() 
         # Remove countries with no polarity
         polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
 
         iso_list = polarity_df['ISO'].tolist()
         polarity_list = polarity_df['conflict_position'].tolist()
         countries_list = polarity_df['country'].tolist()
-
+        print(iso_list, polarity_list, countries_list)
         return iso_list, polarity_list, countries_list
 
 

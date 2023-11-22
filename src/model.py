@@ -26,25 +26,6 @@ class Model:
         self.data = pd.read_csv(dataset, engine='python')
         self.data = self.data.sample(n=100)
         self.data['text'] = self.data['text'].astype(str)
-        useless = [
-            "userid",
-            "tweetid",
-            "following",
-            "totaltweets",
-            "original_tweet_id",
-            "original_tweet_user_id",
-            "original_tweet_username",
-            "in_reply_to_status_id",
-            "in_reply_to_user_id",
-            "in_reply_to_screen_name",
-            "is_quote_status",
-            "quoted_status_id",
-            "quoted_status_userid",
-            "quoted_status_username",
-            "extractedts",
-            "coordinates",
-        ]
-        
         self.loadModel()
         self.add_polarity()
         self.add_sadness()

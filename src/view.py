@@ -85,7 +85,6 @@ class DashView:
                     ],
                     value='scatter'
                 ),
-                #dcc.Graph(id='sample-graph'),
                 html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
             ], style=body_style),
             dcc.Graph(id='choropleth', figure=self.create_cloropleth(self.controller.get_dates()[0]))
@@ -104,6 +103,7 @@ class DashView:
             colorbar_title="Colorbar Title Goes Here",
             )
         )
+        return fig
 
     def setup_callbacks(self):
         @self.app.callback(
