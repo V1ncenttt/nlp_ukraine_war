@@ -24,7 +24,7 @@ class Model:
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
         self.data = pd.read_csv(dataset, engine='python')
-        self.data = self.data.sample(n=1000)
+        self.data = self.data.sample(n=10)
         self.data['text'] = self.data['text'].astype(str)
         self.loadModel()
         self.add_polarity()
