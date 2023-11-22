@@ -8,6 +8,22 @@ import swifter
 from functools import lru_cache
 
 class DataPreProcessor:
+    """
+    A class for preprocessing tweet data.
+
+    This class is responsible for reading, cleaning, and transforming tweet data for analysis. 
+    It includes methods for geocoding, removing unnecessary columns, deleting links from tweets, 
+    and converting country names to ISO codes.
+
+    Attributes:
+        data (pd.DataFrame): DataFrame holding the tweet data.
+        route (str): Path to the dataset file.
+        cache (dict): Cache for storing geocoding results.
+        gc (geonamescache.GeonamesCache): GeonamesCache instance for geocoding.
+        countries (dict): Dictionary of country data from GeonamesCache.
+        pc (pycountry.db): Pycountry database instance for country information.
+    """
+
     def __init__(self, dataset: pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset, low_memory=False)
         
@@ -19,8 +35,21 @@ class DataPreProcessor:
         self.pc = pycountry.countries
             
     @lru_cache(maxsize=None)
-    def geocode(self, location: str):
-        
+    def geocode(self, location: str) -> str:
+        """
+        Geocode a given location string to its country code.
+
+        This method attempts to convert a location name into a country ISO code using various strategies,
+        including a cache, splitting the location string, and using external libraries like pycountry
+        and geonamescache.
+
+        Args:
+            location (str): The location string to be geocoded.
+
+        Returns:
+            str or None: The geocoded country ISO code or None if not found.
+        """
+        # Note: We use lru_cache to cache the results of this method to avoid repeated calls, which considerably speeds up the process
         if location == 'nan' or len(location.split(' ')) >3:
             return None
         
@@ -50,7 +79,20 @@ class DataPreProcessor:
         return country
         
         
-    def geocode_helper(self, location: str):
+    def geocode_helper(self, location: str) -> str:
+        """
+        Helper method for geocoding a location.
+
+        This method assists the main geocode method by trying different strategies to find
+        the country code of a given location string.
+
+        Args:
+            location (str): The location string to be geocoded.
+
+        Returns:
+            str or None: The geocoded country ISO code or None if not found.
+        """
+
         try:
             country = self.countries[location]['iso']
             return country
@@ -67,11 +109,29 @@ class DataPreProcessor:
             except IndexError as e:
                 return None
 
-    def apply_geocode(self):
+    def apply_geocode(self) -> None:
+        """
+        Apply geocoding to the 'location' column of the DataFrame.
+
+        This method uses the geocode function to convert location names in the DataFrame
+        to country ISO codes, storing the results in a new 'country' column.
+        """
+
         self.data["country"] = self.data["location"].swifter.apply(lambda x: self.geocode(x))
 
     @lru_cache(maxsize=None)
-    def country_iso(self, country: str):
+    def country_iso(self, country: str) -> str:
+        """
+        Convert a country name/ISO-2 to its ISO-3 code.
+
+        Args:
+            country (str): The country name to be converted.
+
+        Returns:
+            str or None: The ISO country code or None if not found.
+        """
+
+        # Note: We use lru_cache to cache the results of this method to avoid repeated calls, which considerably speeds up the process
         # List of all the countries found (some are None)
         if country == 'xk':
             return 'XKX'
@@ -87,10 +147,17 @@ class DataPreProcessor:
             return None
         
     
-    def apply_iso(self):
+    def apply_iso(self) -> None:
+        """
+        Apply ISO code conversion to the 'country' column of the DataFrame.
+
+        This method uses the country_iso function to convert country names in the DataFrame
+        to their ISO codes, storing the results in a new 'ISO' column.
+        """
+
         self.data["ISO"] = self.data["country"].swifter.apply(lambda x: self.country_iso(x))
 
-    def delete_links(self):
+    def delete_links(self) -> None:
         """
         Removes hyperlinks from the 'text' column in the DataFrame.
 
@@ -109,7 +176,14 @@ class DataPreProcessor:
             lambda x: re.sub(regex_liens, "", str(x))
         )
 
-    def unnecessary_columns(self):
+    def remove_unnecessary_columns(self) -> None:
+        """
+        Remove unnecessary columns from the DataFrame.
+
+        This method drops a predefined list of columns that are not needed for further analysis,
+        simplifying the DataFrame.
+        """
+
         useless = [
             "userid",
             "tweetid",
@@ -133,14 +207,29 @@ class DataPreProcessor:
             if m in self.data.columns:
                 self.data.drop(m, inplace=True, axis=1)
 
-    def back_to_csv(self):
+    def back_to_csv(self) -> None:
+        """
+        Save the processed DataFrame back to a CSV file.
+
+        This method saves the cleaned and transformed DataFrame to a new CSV file,
+        appending '_PROCESSED' to the original file name.
+        """
+
         self.data.to_csv(
             "../data/tweets_processed/" + os.path.basename(self.route).replace(".csv", "") + "_PROCESSED.csv"
         )
 
-    def preprocess_data(self):
+    def preprocess_data(self) -> None:
+        """
+        Execute the full preprocessing pipeline on the tweet data.
+
+        This method sequentially calls other methods in the class to perform various preprocessing
+        steps like removing unnecessary columns, deleting links, applying geocoding, and converting
+        country names to ISO codes. It also prints the progress of each step.
+        """
+
         print('starting preprocessing for {}...'.format(os.path.basename(self.route)))
-        self.unnecessary_columns()
+        self.remove_unnecessary_columns()
         print('done removing unnecessary columns')
         self.delete_links()
         print('done deleting links')
@@ -156,11 +245,11 @@ class DataPreProcessor:
 if __name__ == "__main__":
     Data = [
         "../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv",
-        #"../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
-        #"../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",
-        #"../data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv",
-        #"../data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv",
-        #"../data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0831_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0908_UkraineCombinedTweetsDeduped.csv",
+        "../data/Tweets Ukraine/0915_UkraineCombinedTweetsDeduped.csv",
     ]
     for fichier in Data:
         D = DataPreProcessor(fichier)

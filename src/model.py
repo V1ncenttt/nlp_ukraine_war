@@ -118,7 +118,7 @@ class Model:
         """
         return self.data[self.data["location"] == country]["polarity"].mean()
 
-    def add_polarity(self):
+    def add_polarity(self) -> None:
         """
         Add a 'polarity' column to the dataset.
 
@@ -127,7 +127,7 @@ class Model:
         """
         self.data["polarity"] = self.data["text"].apply(lambda x: self.polarity(x))
 
-    def add_sadness(self):
+    def add_sadness(self) -> None:
         self.data["sadness"] = self.data["text"].apply(lambda x: self.polarity(x) < 0)
 
     def sort_by_favourite(self):
@@ -178,7 +178,7 @@ class Model:
         This function returns a list of the 10 most active countries
         of the studied DataFrame.
         """    
-         # List of each country's number of tweets
+        # List of each country's number of tweets
 
         count_countries = self.data['Country'].value_counts()
         
@@ -229,7 +229,7 @@ class Model:
         print("Top 5 countries in support of Russia :", top_rus_countries)
 
 
-    def extract_hashtags(self):
+    def extract_hashtags(self) -> None:
         """
         Extracts hashtags from the 'hashtags' column in the DataFrame.
 
@@ -253,7 +253,7 @@ class Model:
         self.data["hashtags"] = self.data["hashtags"].apply(
             lambda x: [tag["text"] for tag in x] if isinstance(x, list) else []
         )
-        return self.data
+    
 
     def __str__(self) -> str:
         """
@@ -268,20 +268,48 @@ class Model:
         return str(self.data)
 
     def get_number_pro_ukr_rus(self, is_pro_russian: bool):
+        """
+        Calculate the number of pro-Russian or pro-Ukrainian stances by country.
+
+        This method groups the data by country and counts the number of instances 
+        aligning with either a pro-Russian or pro-Ukrainian stance, based on the 
+        'conflict_position' column in the dataset.
+
+        Parameters:
+        is_pro_russian (bool): A flag to determine the stance to be counted.
+                            If True, counts pro-Russian stances.
+                            If False, counts pro-Ukrainian stances.
+
+        Returns:
+        tuple: A tuple containing three lists:
+            1. List of ISO country codes.
+            2. List of counts of the specified stance (pro-Russian or pro-Ukrainian) per country.
+            3. List of country names.
+        """
         camp = 2
         if is_pro_russian:
             camp = 1
-        # Group by country and get the mean polarity of each country
+        
+        # Grouping data by ISO and country, and counting the instances of the specified stance
         polarity_df = self.data.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == camp).sum()).reset_index() 
-        # Remove countries with no polarity
+        # Filtering out rows where 'conflict_position' is NaN
         polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
 
+        # Extracting the list of ISO country codes, counts of specified stance, and country names
         iso_list = polarity_df['ISO'].tolist()
         polarity_list = polarity_df['conflict_position'].tolist()
         countries_list = polarity_df['country'].tolist()
         return iso_list, polarity_list, countries_list
         
     def getData(self) -> pd.DataFrame:
+        """
+        Retrieve the stored data.
+
+        This method returns the DataFrame stored in the 'data' attribute of the class instance.
+        
+        Returns:
+        pd.DataFrame: The DataFrame containing the stored data.
+        """
         return self.data
 
 
