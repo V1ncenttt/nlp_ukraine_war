@@ -25,6 +25,7 @@ class Model:
         print("Loading dataset...")
         self.data = pd.read_csv(dataset, engine='python')
         self.data = self.data.sample(n=100)
+        self.data['text'] = self.data['text'].astype(str)
         useless = [
             "userid",
             "tweetid",
