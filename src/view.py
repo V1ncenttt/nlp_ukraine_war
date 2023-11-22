@@ -58,36 +58,36 @@ class DashView:
         model_options = [{'label': model_name, 'value': model_name} for model_name in self.controller.get_dates()]
 
         self.app.layout = html.Div([
-            html.Div(
-                id="banner",
-                className="banner",
-                children=[
-                    html.Img(src=dash.get_asset_url("ukr_flag.png"),
-                             style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
-                    html.Div("Ukrainian War: a global opinion analysis using Twitter data",
-                             style={'fontSize': '24px', 'padding-top': '10px'})
-                ],
-                style=banner_style
-            ),
             html.Div([
-                dcc.Dropdown(
-                    id='model-dropdown',
-                    options=model_options,
-                    value=self.controller.get_dates()[0],
-                    style={'width': '50%'}
-                ),
-                dcc.Dropdown(
-                    id='sample-dropdown',
-                    options=[
-                        {'label': 'WordCloud Hashtags', 'value': 'wordcloud'},
-                        {'label': 'Second WordCloud Hashtags', 'value': 'wordcloud2'},
-                        {'label': 'Choropleth Graph', 'value': 'choropleth'}
-                    ],
-                    value='wordcloud'
-                ),
-                html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
-                html.Div(id='graph-container')  # Container for the graph
-            ], style=body_style),
+                html.Div([
+                    html.Div([
+                        html.Img(src=dash.get_asset_url("ukr_flag.png"),
+                                 style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
+                        html.Div("Ukrainian War: a global opinion analysis using Twitter data",
+                                 style={'fontSize': '24px', 'padding-top': '10px'})
+                    ], style=banner_style),
+                    dcc.Dropdown(
+                        id='model-dropdown',
+                        options=model_options,
+                        value=self.controller.get_dates()[0],
+                        style={'width': '50%'}
+                    ),
+                ], style=body_style),
+                
+                html.Div(id='graph-container'),  # Container for the graph
+                
+                html.Div([
+                    dcc.Dropdown(
+                        id='sample-dropdown',
+                        options=[
+                            {'label': 'WordCloud Hashtags', 'value': 'wordcloud'},
+                            {'label': 'WordCloud Nouns', 'value': 'wordcloud2'},
+                        ],
+                        value='wordcloud'
+                    ),
+                    html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
+                ], style=body_style),
+            ], style={'display': 'flex', 'flex-direction': 'column'}),
         ])
 
     def create_choropleth(self, date):
@@ -117,23 +117,22 @@ class DashView:
     def setup_callbacks(self):
         @self.app.callback(
             [Output('wordcloud-image', 'src'),
-             Output('graph-container', 'children')],  # Use 'children' property to conditionally add the graph
+             Output('graph-container', 'children')],
             [Input('sample-dropdown', 'value'),
              Input('model-dropdown', 'value')]
         )
         def update_visualization(selected_value, date):
             wordcloud_image = None
-            graph_container = None
+            graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
 
             if selected_value == 'wordcloud':
                 wordcloud_image = self.controller.generate_wordcloud(date)
             elif selected_value == 'wordcloud2':
                 wordcloud_image = self.controller.generate_classical_wordcloud(date)
-            elif selected_value == 'choropleth':
-                graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
 
             return wordcloud_image, graph_container
 
     def run(self):
         self.app.run_server(debug=False)
+
 
