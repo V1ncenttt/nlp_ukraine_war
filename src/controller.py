@@ -98,6 +98,13 @@ class Controller:
         self.model.some_method()
     
     def polarity_over_time(self, country:str):
+        '''
+        Plots the average polarity of the tweets from the country in argument
+        over time (each day corresponding to a dataframe)
+        
+        Returns :
+            A pyplot graph
+        '''
         # Getting the average polarity for each day (so each dataframe)
         average_polarities = []
         dates = ['02/04','08/04','05/05','19/08','31/08','08/09','15/09']
