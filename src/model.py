@@ -150,9 +150,10 @@ class Model:
         df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
         print(df_sorted)
 
-        # Extract the usernames of the top 15 users with the most favorite tweets
-        list_sorted_id = df_sorted["username"].tolist()[:15]
-        print("List sorted IDs by favorite tweets:", list_sorted_id)
+        top_users_dict = dict(zip(df_sorted["username"].head(15), df_sorted["favorite_count"].head(15)))
+        print("Dictionary of top 15 users and their favorite counts:", top_users_dict)
+
+        return top_users_dict
 
     def sort_retweets(self):
         """
