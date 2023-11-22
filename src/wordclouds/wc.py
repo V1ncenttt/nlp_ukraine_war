@@ -10,7 +10,7 @@ from spacy.lang.es.stop_words import STOP_WORDS as es_stopwords
 # Panda dataframe importation
 data = pd.read_csv("../../data/0908_UkraineCombinedTweetsDeduped.csv")
 
-if __name__ == "__main__":
+def classical_wordcloud(data):
     # Creating stopwords list
     stopwords = set(STOPWORDS)
     stopwords.add("https")
