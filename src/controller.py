@@ -99,7 +99,13 @@ class Controller:
         return img_src
     
     def generate_classical_wordcloud(self,date):
-
+        '''
+        Generates a wordcloud considering all the words of the tweets from the dataframe
+        corresponding to the date in argument
+        
+        Returns :
+            A png format wordcloud
+        '''
         df = self.models[date].data
         # Creating stopwords list
         stopwords = set(STOPWORDS)
