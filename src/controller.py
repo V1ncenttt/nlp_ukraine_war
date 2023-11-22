@@ -117,5 +117,3 @@ class Controller:
         countries_list = polarity_df['country'].tolist()
 
         return iso_list, polarity_list, countries_list
-
-
