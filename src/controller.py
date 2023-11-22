@@ -148,8 +148,8 @@ class Controller:
 
         # Getting the binary data of the PNG image
         img_binary = img_buffer.getvalue()
-
-        return img_binary
+        img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
+        return img_src
 
 
     def get_polarity_cloropleth_data(self, date):
