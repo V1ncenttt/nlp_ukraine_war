@@ -115,7 +115,7 @@ class Controller:
         text = " ".join(i for i in df["text"])
 
         # Loading the Ukrainian flag image as a mask
-        mask = Image.open("drapeau-ukraine.png").convert("RGBA")
+        mask = Image.open("src/wordclouds/drapeau-ukraine.png").convert("RGBA")
         white_bg = Image.new("RGBA", mask.size, "WHITE")
         white_bg.paste(mask, (0, 0), mask)
         white_bg.convert("RGB")
