@@ -153,7 +153,7 @@ class Controller:
         return img_src
 
 
-    def get_polarity_cloropleth_data(self, date):
+    def get_polarity_cloropleth_data(self, date: str, is_pro_russian: bool = True) -> tuple:
         """
         Generates a DataFrame containing the polarity of each country.
 
@@ -163,18 +163,8 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
-        df=self.models[date].data
-        # Group by country and get the mean polarity of each country
-        print(df[df['conflict_position'] == 1])
-        polarity_df = df.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == 1).sum()).reset_index() 
-        # Remove countries with no polarity
-        polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
-
-        iso_list = polarity_df['ISO'].tolist()
-        polarity_list = polarity_df['conflict_position'].tolist()
-        countries_list = polarity_df['country'].tolist()
-        print(iso_list, polarity_list, countries_list)
-        return iso_list, polarity_list, countries_list
+        model = self.models[date]
+        return model.get_number_pro_ukr_rus(is_pro_russian)
 
     def polarity_over_time(self, country:str):
         # Getting the average polarity for each day (so each dataframe)
@@ -193,4 +183,8 @@ class Controller:
         model=self.models[date]
         return model.sort_by_favourite()
     
+
+
+if __name__ == "__main__":
+    controller = Controller()
     

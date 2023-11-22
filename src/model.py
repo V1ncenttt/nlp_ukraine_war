@@ -267,6 +267,20 @@ class Model:
         """
         return str(self.data)
 
+    def get_number_pro_ukr_rus(self, is_pro_russian: bool):
+        camp = 2
+        if is_pro_russian:
+            camp = 1
+        # Group by country and get the mean polarity of each country
+        polarity_df = self.data.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == camp).sum()).reset_index() 
+        # Remove countries with no polarity
+        polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
+
+        iso_list = polarity_df['ISO'].tolist()
+        polarity_list = polarity_df['conflict_position'].tolist()
+        countries_list = polarity_df['country'].tolist()
+        return iso_list, polarity_list, countries_list
+        
     def getData(self) -> pd.DataFrame:
         return self.data
 
