@@ -30,22 +30,13 @@ body_style = {
     "fontFamily": "Open Sans, sans-serif",
 }
 
-fig = go.Figure(
-    data=go.Choropleth(
-        locations=["ITA", "UK", "FRA"],  # replace with your actual locations
-        z=[1.0, 2.0, 3.0],  # replace with your actual data
-        locationmode="ISO-3",  # or 'country names' for country-level map
-        colorscale="Reds",
-        autocolorscale=False,
-        text=["Arizona", "California", "New York"],  # replace with your actual text
-        marker_line_color="white",
-        colorbar_title="Colorbar Title Goes Here",
-    )
-)
+
 
 external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
 ]
+
+
 
 class View:
     def __init__(self) -> None:
@@ -64,7 +55,6 @@ class DashView:
         self.setup_callbacks()
 
     def setup_layout(self) -> None:
-        # Liste des modèles pour le menu déroulant
         model_options = [{'label': model_name, 'value': model_name} for model_name in self.controller.get_dates()]
 
         self.app.layout = html.Div([
@@ -74,7 +64,7 @@ class DashView:
                 children=[
                     html.Img(src=dash.get_asset_url("ukr_flag.png"),
                              style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
-                    html.Div("Ukrainian War: a global opinion analysis using twitter data",
+                    html.Div("Ukrainian War: a global opinion analysis using Twitter data",
                              style={'fontSize': '24px', 'padding-top': '10px'})
                 ],
                 style=banner_style
@@ -83,39 +73,67 @@ class DashView:
                 dcc.Dropdown(
                     id='model-dropdown',
                     options=model_options,
-                    value=self.controller.get_dates()[0],  # Par défaut, sélectionnez le premier modèle
+                    value=self.controller.get_dates()[0],
                     style={'width': '50%'}
                 ),
                 dcc.Dropdown(
                     id='sample-dropdown',
                     options=[
-                        {'label': 'WordCloud', 'value': 'wordcloud'},
+                        {'label': 'WordCloud Hashtags', 'value': 'wordcloud'},
+                        {'label': 'Second WordCloud Hashtags', 'value': 'wordcloud2'},
+                        {'label': 'Choropleth Graph', 'value': 'choropleth'}
                     ],
-                    value='scatter'
+                    value='wordcloud'
                 ),
-                #dcc.Graph(id='sample-graph'),
                 html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
-            ], style=body_style)
+                html.Div(id='graph-container')  # Container for the graph
+            ], style=body_style),
         ])
+
+    def create_choropleth(self, date):
+        loc, position, countries = self.controller.get_polarity_cloropleth_data(date)
+        fig = go.Figure(
+        data=go.Choropleth(
+            locations=loc,  
+            z=position,  
+            locationmode="ISO-3", 
+            colorscale="Reds",
+            autocolorscale=False,
+            text=[f"{country}: {value}" for country, value in zip(countries, position)], 
+            marker_line_color="white",
+            colorbar_title="Number of pro-russian tweets",
+            )
+        )
+        fig.update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},  # Reduce margins to use more space
+            geo=dict(
+                projection_scale=5,  # Adjust scale of the map
+                center=dict(lat=0, lon=0),  # Adjust center
+            )
+        )
+        
+        return fig
 
     def setup_callbacks(self):
         @self.app.callback(
-            Output('wordcloud-image', 'src'),
+            [Output('wordcloud-image', 'src'),
+             Output('graph-container', 'children')],  # Use 'children' property to conditionally add the graph
             [Input('sample-dropdown', 'value'),
              Input('model-dropdown', 'value')]
         )
-        def update_graph(selected_value, date):
-            # Charger le modèle sélectionné
-
+        def update_visualization(selected_value, date):
             wordcloud_image = None
+            graph_container = None
 
-            
             if selected_value == 'wordcloud':
                 wordcloud_image = self.controller.generate_wordcloud(date)
-           
+            elif selected_value == 'wordcloud2':
+                wordcloud_image = self.controller.generate_classical_wordcloud(date)
+            elif selected_value == 'choropleth':
+                graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
 
-            return wordcloud_image
-
+            return wordcloud_image, graph_container
 
     def run(self):
-        self.app.run_server(debug=True)
+        self.app.run_server(debug=False)
+
