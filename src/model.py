@@ -10,9 +10,21 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 class Model:
+
+    """
+    The Model class that handles the processing and analysis of the dataset.
+
+    This class reads a CSV file into a DataFrame, samples a subset of the data, and drops unnecessary columns. 
+    It provides methods to perform sentiment analysis, geolocation, and other data processing tasks.
+
+    Attributes:
+        data (pd.DataFrame): The DataFrame holding the dataset.
+    """
+
     def __init__(self, dataset: pd.DataFrame) -> None:
-        self.data = pd.read_csv(dataset, low_memory=False)
-        self.data = self.data.sample(n=1000)
+        print("Loading dataset...")
+        self.data = pd.read_csv(dataset, engine='python')
+        self.data = self.data.sample(n=100)
         useless = [
             "userid",
             "tweetid",
@@ -41,6 +53,7 @@ class Model:
         self.add_sadness()
         self.extract_hashtags()
         self.apply_tweet_position()
+        print("Done!")
 
     def loadModel(self) -> None:
         """
@@ -50,9 +63,9 @@ class Model:
             None: Simply loads and prepares the model and tokenizer for use.
         """
         self.model = BertForSequenceClassification.from_pretrained(
-            "../ml/model"
+            "ml/model"
         )  # Load out pre-trained model
-        self.tokenizer = BertTokenizer.from_pretrained("../ml/model")
+        self.tokenizer = BertTokenizer.from_pretrained("ml/model")
         self.device = torch.device(
             "mps" if torch.backends.mps.is_available() else "cpu"
         )  # Optimise the model for the device
@@ -110,6 +123,8 @@ class Model:
         Returns:
         float: The polarity of the text.
         """
+        if tweet == None:
+            return 0
         blob = TextBlob(tweet)
         return blob.sentiment.polarity
 
