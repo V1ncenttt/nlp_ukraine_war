@@ -14,7 +14,7 @@ class Model:
     """
     The Model class that handles the processing and analysis of the dataset.
 
-    This class reads a CSV file into a DataFrame, samples a subset of the data, and drops unnecessary columns. 
+    This class reads a CSV file into a DataFrame, samples a subset of the data, and drops unnecessary columns.
     It provides methods to perform sentiment analysis, geolocation, and other data processing tasks.
 
     Attributes:
@@ -23,9 +23,9 @@ class Model:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
-        self.data = pd.read_csv(dataset, engine='python')
+        self.data = pd.read_csv(dataset, engine="python")
         self.data = self.data.sample(n=10)
-        self.data['text'] = self.data['text'].astype(str)
+        self.data["text"] = self.data["text"].astype(str)
         self.loadModel()
         self.add_polarity()
         self.add_sadness()
@@ -177,14 +177,14 @@ class Model:
         """
         This function returns a list of the 10 most active countries
         of the studied DataFrame.
-        """    
+        """
         # List of each country's number of tweets
 
-        count_countries = self.data['Country'].value_counts()
-        
+        count_countries = self.data["Country"].value_counts()
+
         # Takes the 10 highest values
         mostActiveCountries = count_countries.head(10).index.tolist()
-        print("List of the most active countries :", mostActiveCountries) 
+        print("List of the most active countries :", mostActiveCountries)
 
     def most_active_user(self):
         """
@@ -201,24 +201,24 @@ class Model:
 
         # Takes the 20 highest values
         active_users = counts.head(20).index.tolist()
-        print("List of the most active users :",active_users)   
+        print("List of the most active users :", active_users)
 
     def most_oriented_countries(self):
-        '''
-        From a DataFrame, containing the columns 'country' and 'position' 
+        """
+        From a DataFrame, containing the columns 'country' and 'position'
         where position = 1 if the country supports Russia and 2 for Ukraine,
         finds the 5 most oriented countries in the two positions.
-        
+
         Returns :
             The two top 5 of countries (lists) for Ukraine and Russia
-        '''
+        """
         # Creates 2 dataframes : one for each position (Ukraine or Russia)
-        pro_ukraine_df = self.data[self.data['position'] == 2]
-        pro_russia_df = self.data[self.data['position'] == 1]
+        pro_ukraine_df = self.data[self.data["position"] == 2]
+        pro_russia_df = self.data[self.data["position"] == 1]
 
         # Counts the number of tweets per country in each position
-        ukr_counts = pro_ukraine_df['country'].value_counts()
-        rus_counts = pro_russia_df['country'].value_counts()
+        ukr_counts = pro_ukraine_df["country"].value_counts()
+        rus_counts = pro_russia_df["country"].value_counts()
 
         # Takes the top 5 of each count
         top_ukr_countries = ukr_counts.head(5).index.tolist()
@@ -227,7 +227,6 @@ class Model:
         # Displays the tops
         print("Top 5 countries in support of Ukraine :", top_ukr_countries)
         print("Top 5 countries in support of Russia :", top_rus_countries)
-
 
     def extract_hashtags(self) -> None:
         """
@@ -253,7 +252,6 @@ class Model:
         self.data["hashtags"] = self.data["hashtags"].apply(
             lambda x: [tag["text"] for tag in x] if isinstance(x, list) else []
         )
-    
 
     def __str__(self) -> str:
         """
@@ -271,8 +269,8 @@ class Model:
         """
         Calculate the number of pro-Russian or pro-Ukrainian stances by country.
 
-        This method groups the data by country and counts the number of instances 
-        aligning with either a pro-Russian or pro-Ukrainian stance, based on the 
+        This method groups the data by country and counts the number of instances
+        aligning with either a pro-Russian or pro-Ukrainian stance, based on the
         'conflict_position' column in the dataset.
 
         Parameters:
@@ -289,27 +287,29 @@ class Model:
         camp = 2
         if is_pro_russian:
             camp = 1
-        
+
         # Grouping data by ISO and country, and counting the instances of the specified stance
-        polarity_df = self.data.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == camp).sum()).reset_index() 
+        polarity_df = (
+            self.data.groupby(["ISO", "country"])["conflict_position"]
+            .apply(lambda x: (x == camp).sum())
+            .reset_index()
+        )
         # Filtering out rows where 'conflict_position' is NaN
         polarity_df = polarity_df[polarity_df["conflict_position"].notna()]
 
         # Extracting the list of ISO country codes, counts of specified stance, and country names
-        iso_list = polarity_df['ISO'].tolist()
-        polarity_list = polarity_df['conflict_position'].tolist()
-        countries_list = polarity_df['country'].tolist()
+        iso_list = polarity_df["ISO"].tolist()
+        polarity_list = polarity_df["conflict_position"].tolist()
+        countries_list = polarity_df["country"].tolist()
         return iso_list, polarity_list, countries_list
-        
+
     def getData(self) -> pd.DataFrame:
         """
         Retrieve the stored data.
 
         This method returns the DataFrame stored in the 'data' attribute of the class instance.
-        
+
         Returns:
         pd.DataFrame: The DataFrame containing the stored data.
         """
         return self.data
-
-

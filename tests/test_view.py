@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 from src.view import View
 
+
 class TestView(unittest.TestCase):
     def setUp(self):
         self.view = View()
@@ -18,10 +19,11 @@ class TestView(unittest.TestCase):
         # This is a placeholder, replace with actual test
         self.assertIsNotNone(self.view.app.callback_map)
 
-    @patch('src.view.View.run')
+    @patch("src.view.View.run")
     def test_run(self, mock_run):
         self.view.run()
         mock_run.assert_called_once()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

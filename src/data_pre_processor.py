@@ -7,12 +7,13 @@ import geonamescache
 import swifter
 from functools import lru_cache
 
+
 class DataPreProcessor:
     """
     A class for preprocessing tweet data.
 
-    This class is responsible for reading, cleaning, and transforming tweet data for analysis. 
-    It includes methods for geocoding, removing unnecessary columns, deleting links from tweets, 
+    This class is responsible for reading, cleaning, and transforming tweet data for analysis.
+    It includes methods for geocoding, removing unnecessary columns, deleting links from tweets,
     and converting country names to ISO codes.
 
     Attributes:
@@ -26,14 +27,19 @@ class DataPreProcessor:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset, low_memory=False)
-        
+
         self.route = dataset
-        self.cache = {'New York': 'USA', 'England': 'GBR', 'NYC': 'USA', 'Boston':'USA'}
-        self.data['location'] = self.data['location'].astype(str)
+        self.cache = {
+            "New York": "USA",
+            "England": "GBR",
+            "NYC": "USA",
+            "Boston": "USA",
+        }
+        self.data["location"] = self.data["location"].astype(str)
         self.gc = geonamescache.GeonamesCache()
         self.countries = self.gc.get_countries()
         self.pc = pycountry.countries
-            
+
     @lru_cache(maxsize=None)
     def geocode(self, location: str) -> str:
         """
@@ -50,17 +56,17 @@ class DataPreProcessor:
             str or None: The geocoded country ISO code or None if not found.
         """
         # Note: We use lru_cache to cache the results of this method to avoid repeated calls, which considerably speeds up the process
-        if location == 'nan' or len(location.split(' ')) >3:
+        if location == "nan" or len(location.split(" ")) > 3:
             return None
-        
-        loc = location.split(',')[0].strip()
 
-        if location in self.cache: 
+        loc = location.split(",")[0].strip()
+
+        if location in self.cache:
             return self.cache[location]
         if loc in self.cache:
             return self.cache[loc]
-        
-        loc2 = location.split(',')[-1].strip()
+
+        loc2 = location.split(",")[-1].strip()
 
         country = self.geocode_helper(loc)
 
@@ -73,12 +79,11 @@ class DataPreProcessor:
             except LookupError:
                 self.cache[location] = None
                 return None
-            
+
         self.cache[location] = country
         self.cache[loc] = country
         return country
-        
-        
+
     def geocode_helper(self, location: str) -> str:
         """
         Helper method for geocoding a location.
@@ -94,15 +99,14 @@ class DataPreProcessor:
         """
 
         try:
-            country = self.countries[location]['iso']
+            country = self.countries[location]["iso"]
             return country
-        
+
         except KeyError:
-            
             try:
                 countries = self.gc.get_cities_by_name(location)
-                key =list(countries[0].keys())[0]
-                country = countries[0][key]['countrycode']
+                key = list(countries[0].keys())[0]
+                country = countries[0][key]["countrycode"]
                 return country
             except LookupError as e:
                 return None
@@ -117,7 +121,9 @@ class DataPreProcessor:
         to country ISO codes, storing the results in a new 'country' column.
         """
 
-        self.data["country"] = self.data["location"].swifter.apply(lambda x: self.geocode(x))
+        self.data["country"] = self.data["location"].swifter.apply(
+            lambda x: self.geocode(x)
+        )
 
     @lru_cache(maxsize=None)
     def country_iso(self, country: str) -> str:
@@ -133,10 +139,10 @@ class DataPreProcessor:
 
         # Note: We use lru_cache to cache the results of this method to avoid repeated calls, which considerably speeds up the process
         # List of all the countries found (some are None)
-        if country == 'xk':
-            return 'XKX'
+        if country == "xk":
+            return "XKX"
 
-        if country == 'nan' or country == None:
+        if country == "nan" or country == None:
             return None
 
         try:
@@ -145,8 +151,7 @@ class DataPreProcessor:
         except LookupError:
             # Handle the case where the country name is not found
             return None
-        
-    
+
     def apply_iso(self) -> None:
         """
         Apply ISO code conversion to the 'country' column of the DataFrame.
@@ -155,7 +160,9 @@ class DataPreProcessor:
         to their ISO codes, storing the results in a new 'ISO' column.
         """
 
-        self.data["ISO"] = self.data["country"].swifter.apply(lambda x: self.country_iso(x))
+        self.data["ISO"] = self.data["country"].swifter.apply(
+            lambda x: self.country_iso(x)
+        )
 
     def delete_links(self) -> None:
         """
@@ -216,7 +223,9 @@ class DataPreProcessor:
         """
 
         self.data.to_csv(
-            "../data/tweets_processed/" + os.path.basename(self.route).replace(".csv", "") + "_PROCESSED.csv"
+            "../data/tweets_processed/"
+            + os.path.basename(self.route).replace(".csv", "")
+            + "_PROCESSED.csv"
         )
 
     def preprocess_data(self) -> None:
@@ -228,18 +237,18 @@ class DataPreProcessor:
         country names to ISO codes. It also prints the progress of each step.
         """
 
-        print('starting preprocessing for {}...'.format(os.path.basename(self.route)))
+        print("starting preprocessing for {}...".format(os.path.basename(self.route)))
         self.remove_unnecessary_columns()
-        print('done removing unnecessary columns')
+        print("done removing unnecessary columns")
         self.delete_links()
-        print('done deleting links')
+        print("done deleting links")
         self.apply_geocode()
-        print('done geocoding')
+        print("done geocoding")
         self.apply_iso()
-        print('done applying iso')
+        print("done applying iso")
         self.back_to_csv()
-        print('done preprocessing for {}'.format(os.path.basename(self.route)))
-        print('-----------------------------------')
+        print("done preprocessing for {}".format(os.path.basename(self.route)))
+        print("-----------------------------------")
 
 
 if __name__ == "__main__":
@@ -253,7 +262,7 @@ if __name__ == "__main__":
     ]
     for fichier in Data:
         D = DataPreProcessor(fichier)
-        
+
         D.preprocess_data()
-    
-    print('Done creating all of the preprocessed files')
+
+    print("Done creating all of the preprocessed files")

@@ -31,11 +31,9 @@ body_style = {
 }
 
 
-
 external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
 ]
-
 
 
 class View:
@@ -43,10 +41,10 @@ class View:
         self.controller = Controller()
         self.app = DashView(self.controller)
 
-    
     def run(self):
         self.app.run()
-    
+
+
 class DashView:
     def __init__(self, controller) -> None:
         self.app = dash.Dash(__name__)
@@ -55,53 +53,90 @@ class DashView:
         self.setup_callbacks()
 
     def setup_layout(self) -> None:
-        model_options = [{'label': model_name, 'value': model_name} for model_name in self.controller.get_dates()]
+        model_options = [
+            {"label": model_name, "value": model_name}
+            for model_name in self.controller.get_dates()
+        ]
 
-        self.app.layout = html.Div([
-            html.Div([
-                html.Div([
-                    html.Div([
-                        html.Img(src=dash.get_asset_url("ukr_flag.png"),
-                                 style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
-                        html.Div("Ukrainian War: a global opinion analysis using Twitter data",
-                                 style={'fontSize': '24px', 'padding-top': '10px'})
-                    ], style=banner_style),
-                    dcc.Dropdown(
-                        id='model-dropdown',
-                        options=model_options,
-                        value=self.controller.get_dates()[0],
-                        style={'width': '50%'}
-                    ),
-                ], style=body_style),
-                
-                html.Div(id='graph-container'),  # Container for the graph
-                
-                html.Div([
-                    dcc.Dropdown(
-                        id='sample-dropdown',
-                        options=[
-                            {'label': 'WordCloud Hashtags', 'value': 'wordcloud'},
-                            {'label': 'WordCloud Nouns', 'value': 'wordcloud2'},
-                        ],
-                        value='wordcloud'
-                    ),
-                    html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
-                ], style=body_style),
-            ], style={'display': 'flex', 'flex-direction': 'column'}),
-        ])
+        self.app.layout = html.Div(
+            [
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Img(
+                                            src=dash.get_asset_url("ukr_flag.png"),
+                                            style={
+                                                "height": "50px",
+                                                "border-radius": "10px",
+                                                "marginRight": "10px",
+                                            },
+                                        ),
+                                        html.Div(
+                                            "Ukrainian War: a global opinion analysis using Twitter data",
+                                            style={
+                                                "fontSize": "24px",
+                                                "padding-top": "10px",
+                                            },
+                                        ),
+                                    ],
+                                    style=banner_style,
+                                ),
+                                dcc.Dropdown(
+                                    id="model-dropdown",
+                                    options=model_options,
+                                    value=self.controller.get_dates()[0],
+                                    style={"width": "50%"},
+                                ),
+                            ],
+                            style=body_style,
+                        ),
+                        html.Div(id="graph-container"),  # Container for the graph
+                        html.Div(
+                            [
+                                dcc.Dropdown(
+                                    id="sample-dropdown",
+                                    options=[
+                                        {
+                                            "label": "WordCloud Hashtags",
+                                            "value": "wordcloud",
+                                        },
+                                        {
+                                            "label": "WordCloud Nouns",
+                                            "value": "wordcloud2",
+                                        },
+                                    ],
+                                    value="wordcloud",
+                                ),
+                                html.Img(
+                                    id="wordcloud-image",
+                                    style={"width": "100%", "height": "auto"},
+                                ),
+                            ],
+                            style=body_style,
+                        ),
+                    ],
+                    style={"display": "flex", "flex-direction": "column"},
+                ),
+            ]
+        )
 
     def create_choropleth(self, date):
         loc, position, countries = self.controller.get_polarity_cloropleth_data(date)
         fig = go.Figure(
-        data=go.Choropleth(
-            locations=loc,  
-            z=position,  
-            locationmode="ISO-3", 
-            colorscale="Reds",
-            autocolorscale=False,
-            text=[f"{country}: {value}" for country, value in zip(countries, position)], 
-            marker_line_color="white",
-            colorbar_title="Number of pro-russian tweets",
+            data=go.Choropleth(
+                locations=loc,
+                z=position,
+                locationmode="ISO-3",
+                colorscale="Reds",
+                autocolorscale=False,
+                text=[
+                    f"{country}: {value}" for country, value in zip(countries, position)
+                ],
+                marker_line_color="white",
+                colorbar_title="Number of pro-russian tweets",
             )
         )
         fig.update_layout(
@@ -109,30 +144,26 @@ class DashView:
             geo=dict(
                 projection_scale=5,  # Adjust scale of the map
                 center=dict(lat=0, lon=0),  # Adjust center
-            )
+            ),
         )
-        
+
         return fig
 
     def setup_callbacks(self):
         @self.app.callback(
-            [Output('wordcloud-image', 'src'),
-             Output('graph-container', 'children')],
-            [Input('sample-dropdown', 'value'),
-             Input('model-dropdown', 'value')]
+            [Output("wordcloud-image", "src"), Output("graph-container", "children")],
+            [Input("sample-dropdown", "value"), Input("model-dropdown", "value")],
         )
         def update_visualization(selected_value, date):
             wordcloud_image = None
-            graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
+            graph_container = dcc.Graph(id="graph", figure=self.create_choropleth(date))
 
-            if selected_value == 'wordcloud':
+            if selected_value == "wordcloud":
                 wordcloud_image = self.controller.generate_wordcloud(date)
-            elif selected_value == 'wordcloud2':
+            elif selected_value == "wordcloud2":
                 wordcloud_image = self.controller.generate_classical_wordcloud(date)
 
             return wordcloud_image, graph_container
 
     def run(self):
         self.app.run_server(debug=False)
-
-

@@ -11,6 +11,7 @@ from io import BytesIO
 # Panda dataframe importation
 data = pd.read_csv("../../data/0908_UkraineCombinedTweetsDeduped.csv")
 
+
 def classical_wordcloud(data):
     # Creating stopwords list
     stopwords = set(STOPWORDS)
