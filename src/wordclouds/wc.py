@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import spacy
 from spacy.lang.es.stop_words import STOP_WORDS as es_stopwords
+from io import BytesIO
 
 # Panda dataframe importation
 data = pd.read_csv("../../data/0908_UkraineCombinedTweetsDeduped.csv")
@@ -44,8 +45,13 @@ def classical_wordcloud(data):
         background_color="white",
     ).generate(text)
 
-    # Displaying wordcloud
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis("off")
-    plt.show()
+    # Create a BytesIO buffer to save the WordCloud image
+    img_buffer = BytesIO()
+
+    # Save the WordCloud image to the buffer in PNG format
+    wordcloud.to_image().save(img_buffer, format="PNG")
+
+    # Get the binary data of the PNG image
+    img_binary = img_buffer.getvalue()
+
+    return img_binary

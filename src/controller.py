@@ -105,7 +105,7 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
-        df=self.models[date]
+        df=self.models[date].data
         # Group by country and get the mean polarity of each country
         polarity_df = df.groupby("ISO")["polarity"].mean().reset_index()
 
