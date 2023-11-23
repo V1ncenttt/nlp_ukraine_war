@@ -37,7 +37,7 @@ class View:
 
     def setup_layout(self):
         return html.Div([
-            create_header(), # Header of the website
+            Header().create_header(), # Header of the website
             html.Div([ # Body
                 html.Div([
                     create_date_dropdown(),
@@ -67,7 +67,7 @@ class View:
         [Input('date-dropdown', 'value'), Input('choropleth-option-dropdown', 'value')]
         )
         def update_choropleth(selected_date, selected_option):
-            data = model.get_choropleth_data(selected_date, selected_option)
+            data = self.controller.get_choropleth_data(selected_date, selected_option)
             figure = Visualizor().create_choropleth_figure(data)  
             return figure
 
