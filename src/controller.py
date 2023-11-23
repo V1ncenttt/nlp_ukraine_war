@@ -70,6 +70,8 @@ class Controller:
         """
         return list(self.models.keys())
 
+    def get_all_countries(self) -> list:
+        return []
 
     def generate_wordcloud(self, date: str) -> bytes:
         """
@@ -181,7 +183,7 @@ class Controller:
         return img_src
 
 
-    def get_polarity_cloropleth_data(self, date: str, is_pro_russian: bool = True) -> tuple:
+    def get_choropleth_data(self, date: str, is_pro_russian:str) -> tuple:
         """
         Generates a DataFrame containing the polarity of each country.
 
@@ -191,6 +193,10 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
+        is_pro_russian=False
+        if is_pro_russian=="option1":
+            is_pro_russian=True
+
         model = self.models[date]
         return model.get_number_pro_ukr_rus(is_pro_russian)
 

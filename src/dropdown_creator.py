@@ -1,11 +1,13 @@
 import dash_core_components as dcc
+from src.controller import Controller
 
 class DropdownCreator:
-    def create_date_dropdown(self):
+    
+    def create_date_dropdown(self, dates):
         return dcc.Dropdown(
             id='date-dropdown',
-            options=[{'label': date, 'value': date} for date in get_all_dates()],
-            value=get_default_date()
+            options=[{'label': date, 'value': date} for date in dates],
+            value='02/04'
         )
 
     def create_option_dropdown(self, id):
@@ -15,9 +17,9 @@ class DropdownCreator:
             value='option1'
         )
 
-    def create_country_dropdown(self):
+    def create_country_dropdown(self, countries):
         return dcc.Dropdown(
             id='country-dropdown',
-            options=[{'label': country, 'value': country} for country in get_all_countries()],
-            value=get_default_country()
+            options=[{'label': country, 'value': country} for country in countries],
+            value='France'
         )

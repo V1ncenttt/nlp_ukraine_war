@@ -1,5 +1,5 @@
 import dash_html_components as html
-
+import dash
 banner_style = {
     "backgroundColor": "white",
     "padding": "10px",
@@ -18,4 +18,4 @@ class Header:
                                  style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
                         html.Div("Ukrainian War: a global opinion analysis using Twitter data",
                                  style={'fontSize': '24px', 'padding-top': '10px'})
-                ], style=banner_style),
+                ], style=banner_style)
