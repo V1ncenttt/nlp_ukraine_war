@@ -63,33 +63,55 @@ class View:
                 ])
             ], style=body_style)
         ])
-    
+        
     def setup_callbacks(self):
+        """
+        Set up the Dash callbacks for interactive updates.
+
+        Includes callbacks for updating choropleth map, bar chart, wordcloud, and line chart.
+        """
         @self.app.callback(
-        Output('choropleth-div', 'children'),
-        [Input('date-dropdown', 'value'), Input('choropleth-option-dropdown', 'value')]
+            Output('choropleth-div', 'children'),
+            [Input('date-dropdown', 'value'), Input('choropleth-option-dropdown', 'value')]
         )
         def update_choropleth(selected_date, selected_option):
-            
+            """
+            Update the choropleth map based on user-selected date and choropleth option.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected choropleth option from the dropdown.
+
+            Returns:
+            - dcc.Graph: Dash component representing the updated choropleth map.
+            """
             print(selected_date, selected_option)
             figure = Visualizor().create_choropleth_map(self.controller.get_choropleth_data(selected_date, selected_option))
             return figure
 
         @self.app.callback(
-        Output('barchart-div', 'children'),
-        [Input('date-dropdown', 'value'), Input('bar-chart-dropdown', 'value')]
+            Output('barchart-div', 'children'),
+            [Input('date-dropdown', 'value'), Input('bar-chart-dropdown', 'value')]
         )
         def update_bar_chart(selected_date, selected_option):
+            """
+            Update the bar chart based on user-selected date and bar chart option.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected bar chart option from the dropdown.
+
+            Returns:
+            - dcc.Graph: Dash component representing the updated bar chart.
+            """
             data = self.controller.get_barchart_data(selected_date, selected_option)
             print(data)
             figure = Visualizor().create_bar_chart(data)
             return figure
-    
 
-            
         @self.app.callback(
-        Output('wordcloud', 'src'),
-        [Input('date-dropdown', 'value'), Input('wordcloud-dropdown', 'value')]
+            Output('wordcloud', 'src'),
+            [Input('date-dropdown', 'value'), Input('wordcloud-dropdown', 'value')]
         )
         def update_wordcloud(selected_date, selected_option):
             """
@@ -113,15 +135,24 @@ class View:
             # Return the generated wordcloud image source URL
             return wordcloud_image
 
-        
         @self.app.callback(
-        Output('line-chart', 'figure'),
-        [Input('country-dropdown', 'value')]
+            Output('line-chart', 'figure'),
+            [Input('country-dropdown', 'value')]
         )
         def update_line_chart(selected_country):
+            """
+            Update the line chart based on the selected country.
+
+            Parameters:
+            - selected_country (str): The selected country from the country dropdown.
+
+            Returns:
+            - dcc.Graph: Dash component representing the updated line chart.
+            """
             data = None
             figure = Visualizor().create_line_chart(data)
             return figure
+
 
 
 if __name__ == "__main__":
