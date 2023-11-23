@@ -29,11 +29,14 @@ external_stylesheets = [
 
     
 class View:
-    def __init__(self, controller) -> None:
+    def __init__(self) -> None:
         self.app = dash.Dash(__name__)
         self.controller = Controller()
         self.setup_layout()
         self.setup_callbacks()
+
+    def run(self):
+        self.app.run_server(debug=False)
 
     def setup_layout(self):
         return html.Div([
@@ -53,7 +56,7 @@ class View:
                         DropdownCreator().create_option_dropdown('wordcloud-dropdown'),
                         Visualizor().create_wordcloud()
                     ]),
-                ])
+                ]),
                 html.Div([
                         DropdownCreator().create_country_dropdown(),
                         Visualizor().create_line_chart()
@@ -100,3 +103,6 @@ class View:
             return figure
 
 
+if __name__ == "__main__":
+    view = View()
+    view.run()
