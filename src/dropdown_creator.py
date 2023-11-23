@@ -9,7 +9,14 @@ class DropdownCreator:
             options=[{'label': date, 'value': date} for date in dates],
             value='02/04'
         )
-
+    
+    def create_choropleth_option_dropdown(self):
+        return dcc.Dropdown(
+            id='choropleth-option-dropdown',
+            options=[{'label': 'Option 1', 'value': 'option1'}, {'label': 'Option 2', 'value': 'option2'}],
+            value='option1'
+        )
+        
     def create_option_dropdown(self, id):
         return dcc.Dropdown(
             id=id,

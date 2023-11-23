@@ -122,6 +122,7 @@ class DashView:
              Input('model-dropdown', 'value')]
         )
         def update_visualization(selected_value, date):
+            print((date, selected_value))
             wordcloud_image = None
             graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
 

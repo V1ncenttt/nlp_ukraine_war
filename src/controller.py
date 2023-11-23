@@ -193,10 +193,13 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
-        is_pro_russian=False
+        
+
         if is_pro_russian=="option1":
             is_pro_russian=True
-
+        else:
+            is_pro_russian=False
+            
         model = self.models[date]
         return model.get_number_pro_ukr_rus(is_pro_russian)
 

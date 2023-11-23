@@ -307,6 +307,7 @@ class DataPreProcessor:
 
 if __name__ == "__main__":
     Data = [
+        "../data/Tweets Ukraine/0408_UkraineCombinedTweetsDeduped.csv",
         "../data/Tweets Ukraine/0402_UkraineCombinedTweetsDeduped.csv",
         "../data/Tweets Ukraine/0505_to_0507_UkraineCombinedTweetsDeduped.csv",
         "../data/Tweets Ukraine/0819_UkraineCombinedTweetsDeduped.csv",

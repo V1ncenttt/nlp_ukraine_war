@@ -45,8 +45,8 @@ class View:
                 html.Div([
                     DropdownCreator().create_date_dropdown(self.controller.get_dates()),
                     html.Div([
-                        DropdownCreator().create_option_dropdown('map-dropdown'),
-                        Visualizor().create_choropleth_map(self.controller.get_choropleth_data('02/04', 'option1'))
+                        DropdownCreator().create_choropleth_option_dropdown(),
+                        html.Div(id='choropleth-div')
                     ]),
                     html.Div([
                         DropdownCreator().create_option_dropdown('bar-chart-dropdown'),
@@ -66,12 +66,13 @@ class View:
     
     def setup_callbacks(self):
         @self.app.callback(
-        Output('choropleth-map', 'figure'),
+        Output('choropleth-div', 'children'),
         [Input('date-dropdown', 'value'), Input('choropleth-option-dropdown', 'value')]
         )
         def update_choropleth(selected_date, selected_option):
-            data = self.controller.get_choropleth_data(selected_date, selected_option)
-            figure = Visualizor().create_choropleth(data)  
+            
+            print(selected_date, selected_option)
+            figure = Visualizor().create_choropleth_map(self.controller.get_choropleth_data(selected_date, selected_option))
             return figure
 
         @self.app.callback(

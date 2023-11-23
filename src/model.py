@@ -226,9 +226,11 @@ class Model:
             3. List of country names.
         """
         camp = 2
+
         if is_pro_russian:
             camp = 1
-        
+            
+        print(camp)
         # Grouping data by ISO and country, and counting the instances of the specified stance
         polarity_df = self.data.groupby(['ISO', 'country'])['conflict_position'].apply(lambda x: (x == camp).sum()).reset_index() 
         # Filtering out rows where 'conflict_position' is NaN
@@ -238,6 +240,7 @@ class Model:
         iso_list = polarity_df['ISO'].tolist()
         polarity_list = polarity_df['conflict_position'].tolist()
         countries_list = polarity_df['country'].tolist()
+        print(iso_list, polarity_list, countries_list)
         return iso_list, polarity_list, countries_list
         
     def getData(self) -> pd.DataFrame:

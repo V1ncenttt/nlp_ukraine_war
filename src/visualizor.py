@@ -4,7 +4,6 @@ import plotly.express as px
 
 class Visualizor:
     def create_choropleth_map(self, data):
-        print(data)
         loc, position, countries = data
 
         fig = go.Figure(
@@ -28,7 +27,7 @@ class Visualizor:
             )
         )
         
-        return dcc.Graph(id='graph', figure=fig)
+        return dcc.Graph(id='choropleth-map', figure=fig)
 
     def create_bar_chart(self, data):
         return dcc.Graph(id='bar-chart')
