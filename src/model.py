@@ -1,8 +1,5 @@
 import pandas as pd
 from textblob import TextBlob
-from geopy.geocoders import OpenCage
-from geopy.extra.rate_limiter import RateLimiter
-from geopy.geocoders import Nominatim
 import torch
 import ast
 from transformers import BertTokenizer, BertForSequenceClassification
@@ -23,70 +20,14 @@ class Model:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
-        self.data = pd.read_csv(dataset, engine="python")
+        self.data = pd.read_csv(dataset, engine='python')
         self.data = self.data.sample(n=10)
-        self.data["text"] = self.data["text"].astype(str)
+        self.data['text'] = self.data['text'].astype(str)
         self.loadModel()
         self.add_polarity()
         self.add_sadness()
         self.extract_hashtags()
-        self.apply_tweet_position()
         print("Done!")
-
-    def loadModel(self) -> None:
-        """
-        Loads the pre-trained BERT model and tokenizer.
-
-        Returns:
-            None: Simply loads and prepares the model and tokenizer for use.
-        """
-        self.model = BertForSequenceClassification.from_pretrained(
-            "ml/model"
-        )  # Load out pre-trained model
-        self.tokenizer = BertTokenizer.from_pretrained("ml/model")
-        self.device = torch.device(
-            "mps" if torch.backends.mps.is_available() else "cpu"
-        )  # Optimise the model for the device
-        self.model.to(self.device)
-        self.model.eval()  # Load the model in eval/production mode
-
-    def apply_tweet_position(self) -> None:
-        """
-        Classifies the text in the 'text' column of the instance's DataFrame using our pre-trained BERT model.
-
-        This method tokenizes the text using the batch_encode_plus method of the tokenizer,
-        processes it in batches using a DataLoader, and applies the pre-trained model to
-        each batch to predict the sentiment/conflict position. The predictions are then
-        appended to the DataFrame in a new column 'conflict_position'.
-        Returns:
-            None: Modifies the instance's DataFrame in place, adding a 'conflict_position' column with predictions.
-        """
-        tokens = self.tokenizer.batch_encode_plus(
-            self.data["text"].tolist(),
-            max_length=128,
-            padding=True,
-            truncation=True,
-            return_tensors="pt",
-        )  # Tokenize the whole dataset
-
-        dataset = TensorDataset(tokens["input_ids"], tokens["attention_mask"])
-        dataloader = DataLoader(
-            dataset, batch_size=32
-        )  # Prepare the dataloader for batch processing
-
-        positions = []
-        with torch.no_grad():
-            for batch in dataloader:  # Make the predictions in batch
-                input_ids, attention_mask = [
-                    b.to(self.device) for b in batch
-                ]  # Load the tensors in the selected device
-                outputs = self.model(input_ids, attention_mask=attention_mask)
-                logits = outputs.logits
-                preds = torch.argmax(logits, dim=1).cpu().numpy()
-                positions.extend(preds)
-
-        # Add the predictions to the dataset
-        self.data["conflict_position"] = positions
 
     def polarity(self, tweet: str):
         """
@@ -130,7 +71,7 @@ class Model:
     def add_sadness(self) -> None:
         self.data["sadness"] = self.data["text"].apply(lambda x: self.polarity(x) < 0)
 
-    def sort_by_favourite(self):
+    def sort_by_favorite(self):
         """
         Sorts the DataFrame based on the 'favorite_count' column in descending order.
 
@@ -138,11 +79,12 @@ class Model:
         Then, it sorts the DataFrame stored in the 'data' attribute based on the 'favorite_count' column in descending order.
         The sorted DataFrame is printed to the console.
 
-        Additionally, it extracts the usernames of the top 15 users with the most favorite tweets and prints the list.
-
+        Additionally, it extracts the usernames and favorite counts of the top 15 users with the most favorite tweets
+        and prints the list and a dictionary with usernames as keys and favorite counts as values.
         Returns:
             None
         """
+        
         # Convert 'favorite_count' column to integer
         self.data["favorite_count"] = self.data["favorite_count"].astype(int)
 
@@ -150,9 +92,18 @@ class Model:
         df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
         print(df_sorted)
 
-        # Extract the usernames of the top 15 users with the most favorite tweets
-        list_sorted_id = df_sorted["username"].tolist()[:15]
+        # Extract the usernames and favorite counts of the top 15 users with the most favorite tweets
+        top_users = df_sorted[["username", "favorite_count"]].head(15)
+
+        # Print list of sorted IDs by favorite tweets
+        list_sorted_id = top_users["username"].tolist()
         print("List sorted IDs by favorite tweets:", list_sorted_id)
+
+        # Convert the top_users DataFrame to a dictionary
+        user_likes_dict = top_users.set_index("username")["favorite_count"].to_dict()
+
+        # Print the dictionary
+        print("Dictionary of usernames and favorite counts:", user_likes_dict)
 
     def sort_retweets(self):
         """
@@ -319,3 +270,5 @@ class Model:
         pd.DataFrame: The DataFrame containing the stored data.
         """
         return self.data
+
+

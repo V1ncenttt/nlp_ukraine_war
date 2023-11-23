@@ -23,7 +23,7 @@ class Controller:
     """
     A singleton controller class that manages different models for tweet data analysis.
 
-    This class ensures only one instance of itself is created and provides various methods
+    This class ensures only one instance of itself is created and provides various methods 
     to analyze tweet data, such as generating word clouds and extracting polarity data.
 
     Attributes:
@@ -83,6 +83,9 @@ class Controller:
         """
         return list(self.models.keys())
 
+    def get_all_countries(self) -> list:
+        return []
+
     def generate_wordcloud(self, date: str) -> bytes:
         """
         Generates a WordCloud based on hashtags in the DataFrame.
@@ -96,7 +99,7 @@ class Controller:
                 ValueError: If the 'hashtags' column is not present in the DataFrame.
         """
 
-        df = self.models[date].data
+        df=self.models[date].data
         # Check if the 'hashtags' column exists in the DataFrame
         if "hashtags" not in df.columns:
             raise ValueError("La colonne 'hashtags' n'existe pas dans le DataFrame.")
@@ -137,8 +140,8 @@ class Controller:
         img_binary = img_buffer.getvalue()
         img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
         return img_src
-
-    def generate_classical_wordcloud(self, date: str) -> bytes:
+    
+    def generate_classical_wordcloud(self,date: str) -> bytes:
         """
         Generates a traditional word cloud for a specific date, considering all words in the tweets.
 
@@ -206,10 +209,14 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
+        is_pro_russian=False
+        if is_pro_russian=="option1":
+            is_pro_russian=True
+
         model = self.models[date]
         return model.get_number_pro_ukr_rus(is_pro_russian)
 
-    def get_polarity_over_time(self, country: str):
+    def get_polarity_over_time(self, country:str):
         """
         Plots the average polarity of tweets over time for a given country.
 
@@ -218,16 +225,16 @@ class Controller:
         """
         # Getting the average polarity for each day (so each dataframe)
         average_polarities = []
-        dates = ["02/04", "08/04", "05/05", "19/08", "31/08", "08/09", "15/09"]
+        dates = ['02/04','08/04','05/05','19/08','31/08','08/09','15/09']
         for model in self.models:
             average_polarities.append(model.get_average_polarity_for_country(country))
-
+        
         # Displaying the graph
-        plt.plot(dates, average_polarities)
-        plt.xlabel("Date")
-        plt.ylabel("Average polarity of the tweets from the country")
+        plt.plot(dates,average_polarities)
+        plt.xlabel('Date')
+        plt.ylabel('Average polarity of the tweets from the country')
         plt.show()
-
+        
     def favourite_users(self, date: str) -> list:
         """
         Retrieves a sorted list of users based on their 'favourite' count for a given date.
@@ -238,9 +245,11 @@ class Controller:
         Returns:
         list: A list of users sorted by their 'favourite' count.
         """
-        model = self.models[date]
+        model=self.models[date]
         return model.sort_by_favourite()
+    
 
 
 if __name__ == "__main__":
     controller = Controller()
+    
