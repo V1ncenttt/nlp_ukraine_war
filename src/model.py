@@ -20,7 +20,7 @@ class Model:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
-        self.data = pd.read_csv(dataset, engine='python').sample(100)
+        self.data = pd.read_csv(dataset, engine='python').sample(1000)
         self.data['text'] = self.data['text'].astype(str)
         self.add_polarity()
         self.add_sadness()
@@ -69,7 +69,7 @@ class Model:
     def add_sadness(self) -> None:
         self.data["sadness"] = self.data["text"].apply(lambda x: self.polarity(x) < 0)
 
-    def sort_by_favourite(self):
+    def sort_by_favorite(self):
         """
         Sorts the DataFrame based on the 'favorite_count' column in descending order.
 
@@ -77,11 +77,12 @@ class Model:
         Then, it sorts the DataFrame stored in the 'data' attribute based on the 'favorite_count' column in descending order.
         The sorted DataFrame is printed to the console.
 
-        Additionally, it extracts the usernames of the top 15 users with the most favorite tweets and prints the list.
-
+        Additionally, it extracts the usernames and favorite counts of the top 15 users with the most favorite tweets
+        and prints the list and a dictionary with usernames as keys and favorite counts as values.
         Returns:
             None
         """
+        
         # Convert 'favorite_count' column to integer
         self.data["favorite_count"] = self.data["favorite_count"].astype(int)
 
@@ -89,9 +90,18 @@ class Model:
         df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
         print(df_sorted)
 
-        # Extract the usernames of the top 15 users with the most favorite tweets
-        list_sorted_id = df_sorted["username"].tolist()[:15]
+        # Extract the usernames and favorite counts of the top 15 users with the most favorite tweets
+        top_users = df_sorted[["username", "favorite_count"]].head(15)
+
+        # Print list of sorted IDs by favorite tweets
+        list_sorted_id = top_users["username"].tolist()
         print("List sorted IDs by favorite tweets:", list_sorted_id)
+
+        # Convert the top_users DataFrame to a dictionary
+        user_likes_dict = top_users.set_index("username")["favorite_count"].to_dict()
+
+        # Print the dictionary
+        print("Dictionary of usernames and favorite counts:", user_likes_dict)
 
     def sort_retweets(self):
         """
@@ -250,5 +260,3 @@ class Model:
         pd.DataFrame: The DataFrame containing the stored data.
         """
         return self.data
-
-
