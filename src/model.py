@@ -58,6 +58,9 @@ class Model:
         Returns:
         float: float mapping country names to average polarity.
         """
+        if country not in self.get_all_countries():
+            return 0
+            
         return self.data[self.data["location"] == country]["polarity"].mean()
 
     def add_polarity(self) -> None:

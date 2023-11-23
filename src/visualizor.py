@@ -53,5 +53,5 @@ class Visualizor:
         return dcc.Graph(id='bar-chart', figure=fig)
         
     def create_line_chart(self, data):
-        fig = px.line(data, x="Date", y="Polarity", title='Polarity over time')
+        fig = px.line(data, x="Date", y="Polarity", title='Polarity over time', markers=True)
         return dcc.Graph(id='line-chart', figure=fig)

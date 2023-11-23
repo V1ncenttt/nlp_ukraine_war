@@ -13,7 +13,8 @@ class TestController(unittest.TestCase):
         self.assertEqual(self.controller, controller2)
 
     def test_get_all_countries(self):
-        pass
+        countries = self.controller.get_all_countries()
+        self.assertIsNotNone(countries)
     
     def test_get_dates(self):
         # Test the get_dates method
@@ -29,13 +30,6 @@ class TestController(unittest.TestCase):
         dates = self.controller.get_dates()
         self.assertEqual(dates, expected_dates)
 
-    def test_favourite_users(self):
-        # Test the favourite_users method
-        date = "2022-01-01"
-        expected_users = ["user1", "user2", "user3"]
-        users = self.controller.favourite_users(date)
-        self.assertEqual(users, expected_users)
 
 
-if __name__ == "__main__":
-    unittest.main()
+

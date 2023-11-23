@@ -93,12 +93,12 @@ Enjoy!
 | 7      | Implement a cloropleth using geographical data and the classification of the tweets 🗺️ | Important | ✅ Done  |
 | 8      | Provide a way for users to easily run the project (Makefile) 🏃 | Important  | ✅ Done    |
 | 9      | Add other plots to the web application 📈               | Medium     | ✅ Done  |
-| 10     | Add unit and coverage testing 🧪                        | Medium     | 🚧 WIP |
-| 11     | Provide documentation with docstrings and a sphynx wiki 📝 | Medium   | 🚧 WIP |
-| 12     | Compare other methods of classifiers (rule-based, LSTMs...) 🔄 | Low     | ❌ Not started |
-| 13     | Put the repository in a docker container to run it easily 🐳 | Low      | ❌ Not started |
-| 14     | Write a project report 📄                                | Low        | ❌ Not started |
-| 15     | Analyse the datasets as time-series ⏳                   | Very Low   | ❌ Will not do |
+| 10     | Add unit and coverage testing 🧪                        | Medium     | 🚧 Partial |
+| 11     | Provide documentation with docstrings and a sphynx wiki 📝 | Medium   | 🚧 Partial |
+| 12     | Compare other methods of classifiers (rule-based, LSTMs...) 🔄 | Low     | ❌ In the future |
+| 13     | Put the repository in a docker container to run it easily 🐳 | Low      | ❌ In the future |
+| 14     | Write a project report 📄                                | Low        | ❌ In the future |
+| 15     | Analyse the datasets as time-series ⏳                   | Very Low   | 🚧 Partial |
 
 ## Contributing 👫
 If you'd like to contribute to this project, feel free to fork the repository, create a new branch, make your changes, and submit a pull request. Make sure to follow the project's coding standards and guidelines.
