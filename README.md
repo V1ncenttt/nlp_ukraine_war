@@ -1,8 +1,9 @@
 <p align="center">
   <a href="" rel="noopener">
-[<img width="100px" height="100px" src="src/assets/ukr_flag.png" alt="Project logo">](src/assets/ukr_flag.png)
+ <img width=100px height=100px src="src/assets/ukr_flag.png" alt="Project logo"></a>
 </p>
 <div align="center">
+
 
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -55,6 +56,8 @@ The primary dataset for this project is the "Ukraine Russian Crisis Twitter Data
 
 3. **Download the model and place it:**
    Click [here](https://drive.google.com/file/d/1uavrkWP4_GfNg_MmC9NhG-X0wSuv8Jz8/view?usp=sharing) to download the model. Once you have downloaded it, simply extract it and place the */model* folder inside the *ml* folder.
+4. **Download the pre-processed dataset**
+   Click [here](https://drive.google.com/file/d/1x8Hxm5HmQ4f4FfApCdP4bwXTgzVf7Ivp/view?usp=sharing) to download the pre-procces datasets. Once you have it, place the */tweets_processed* folder inside */data*.
 
 **If you have Python3 installed:**
 
@@ -82,16 +85,16 @@ Enjoy!
 | Req № | Description                                            | Importance | Current state |
 |--------|--------------------------------------------------------|------------|---------------|
 | 1      | Pre-process the datasets and extract knowledge 📚       | Crucial    | ✅ Done        |
-| 2      | Create data visualisations from the dataset 📊          | Crucial    | 🚧 WIP         |
-| 3      | Perform sentiment analysis from the dataset 💭          | Crucial    | 🚧 WIP         |
+| 2      | Create data visualisations from the dataset 📊          | Crucial    | ✅ Done        |
+| 3      | Perform sentiment analysis from the dataset 💭          | Crucial    | ✅ Done      |
 | 4      | Create a transformer/shallow learning-based tweet classifier (pro Russian/Ukrainian) 🐦 | Important | ✅ Done |
-| 5      | Make a web-application using dash 🌐                    | Important  | 🚧 WIP         |
+| 5      | Make a web-application using dash 🌐                    | Important  | ✅ Done        |
 | 6      | Create wordclouds ☁️                                    | Important  | ✅ Done        |
-| 7      | Implement a cloropleth using geographical data and the classification of the tweets 🗺️ | Important | 🚧 WIP |
+| 7      | Implement a cloropleth using geographical data and the classification of the tweets 🗺️ | Important | ✅ Done  |
 | 8      | Provide a way for users to easily run the project (Makefile) 🏃 | Important  | ✅ Done    |
-| 9      | Add other plots to the web application 📈               | Medium     | ❌ Not started |
+| 9      | Add other plots to the web application 📈               | Medium     | ✅ Done  |
 | 10     | Add unit and coverage testing 🧪                        | Medium     | 🚧 WIP |
-| 11     | Provide documentation with docstrings and a sphynx wiki 📝 | Medium   | ❌ Not started |
+| 11     | Provide documentation with docstrings and a sphynx wiki 📝 | Medium   | 🚧 WIP |
 | 12     | Compare other methods of classifiers (rule-based, LSTMs...) 🔄 | Low     | ❌ Not started |
 | 13     | Put the repository in a docker container to run it easily 🐳 | Low      | ❌ Not started |
 | 14     | Write a project report 📄                                | Low        | ❌ Not started |
