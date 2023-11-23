@@ -6,6 +6,11 @@ import pycountry
 import geonamescache
 import swifter
 from functools import lru_cache
+import torch
+import ast
+from transformers import BertTokenizer, BertForSequenceClassification
+from torch.utils.data import DataLoader, TensorDataset
+from tqdm import tqdm
 
 class DataPreProcessor:
     """
@@ -25,15 +30,71 @@ class DataPreProcessor:
     """
 
     def __init__(self, dataset: pd.DataFrame) -> None:
-        self.data = pd.read_csv(dataset, low_memory=False)
-        
+        self.data = pd.read_csv(dataset, low_memory=False).sample(20000)
         self.route = dataset
         self.cache = {'New York': 'USA', 'England': 'GBR', 'NYC': 'USA', 'Boston':'USA'}
         self.data['location'] = self.data['location'].astype(str)
         self.gc = geonamescache.GeonamesCache()
         self.countries = self.gc.get_countries()
         self.pc = pycountry.countries
-            
+        self.loadModel()
+
+    def loadModel(self) -> None:
+        """
+        Loads the pre-trained BERT model and tokenizer.
+
+        Returns:
+            None: Simply loads and prepares the model and tokenizer for use.
+        """
+        self.model = BertForSequenceClassification.from_pretrained(
+            "../ml/model"
+        )  # Load out pre-trained model
+        self.tokenizer = BertTokenizer.from_pretrained("../ml/model")
+        self.device = torch.device(
+            "mps" if torch.backends.mps.is_available() else "cpu"
+        )  # Optimise the model for the device
+        self.model.to(self.device)
+        self.model.eval()  # Load the model in eval/production mode
+
+    
+    def apply_tweet_position(self) -> None:
+        """
+        Classifies the text in the 'text' column of the instance's DataFrame using our pre-trained BERT model.
+
+        This method tokenizes the text using the batch_encode_plus method of the tokenizer,
+        processes it in batches using a DataLoader, and applies the pre-trained model to
+        each batch to predict the sentiment/conflict position. The predictions are then
+        appended to the DataFrame in a new column 'conflict_position'.
+        Returns:
+            None: Modifies the instance's DataFrame in place, adding a 'conflict_position' column with predictions.
+        """
+        tokens = self.tokenizer.batch_encode_plus(
+            self.data["text"].tolist(),
+            max_length=128,
+            padding=True,
+            truncation=True,
+            return_tensors="pt",
+        )  # Tokenize the whole dataset
+
+        dataset = TensorDataset(tokens["input_ids"], tokens["attention_mask"])
+        dataloader = DataLoader(
+            dataset, batch_size=64
+        )  # Prepare the dataloader for batch processing
+
+        positions = []
+        with torch.no_grad():
+            for batch in tqdm(dataloader, desc="Processing batches"):  # Make the predictions in batch
+                input_ids, attention_mask = [
+                    b.to(self.device) for b in batch
+                ]  # Load the tensors in the selected device
+                outputs = self.model(input_ids, attention_mask=attention_mask)
+                logits = outputs.logits
+                preds = torch.argmax(logits, dim=1).cpu().numpy()
+                positions.extend(preds)
+
+        # Add the predictions to the dataset
+        self.data["conflict_position"] = positions
+
     @lru_cache(maxsize=None)
     def geocode(self, location: str) -> str:
         """
@@ -237,6 +298,8 @@ class DataPreProcessor:
         print('done geocoding')
         self.apply_iso()
         print('done applying iso')
+        self.apply_tweet_position()
+        print('done applying tweet position')
         self.back_to_csv()
         print('done preprocessing for {}'.format(os.path.basename(self.route)))
         print('-----------------------------------')
@@ -253,7 +316,6 @@ if __name__ == "__main__":
     ]
     for fichier in Data:
         D = DataPreProcessor(fichier)
-        
         D.preprocess_data()
     
     print('Done creating all of the preprocessed files')
