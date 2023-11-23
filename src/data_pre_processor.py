@@ -181,6 +181,26 @@ class DataPreProcessor:
         self.data["country"] = self.data["location"].swifter.apply(lambda x: self.geocode(x))
 
     @lru_cache(maxsize=None)
+    def iso2_to_name(self, country_iso: str) ->str:
+        try:
+            nation = pycountry.countries.search_fuzzy(country_iso)[0]
+            return nation.name
+        except LookupError:
+            # Handle the case where the country name is not found
+            return None
+        
+    
+    def apply_name(self) -> None:
+        """
+        Apply geocoding to the 'location' column of the DataFrame.
+
+        This method uses the geocode function to convert location names in the DataFrame
+        to country ISO codes, storing the results in a new 'country' column.
+        """
+
+        self.data["country"] = self.data["ISO"].swifter.apply(lambda x: self.iso2_to_name(x))
+
+    @lru_cache(maxsize=None)
     def country_iso(self, country: str) -> str:
         """
         Convert a country name/ISO-2 to its ISO-3 code.
@@ -297,6 +317,7 @@ class DataPreProcessor:
         self.apply_geocode()
         print('done geocoding')
         self.apply_iso()
+        self.apply_name()
         print('done applying iso')
         self.apply_tweet_position()
         print('done applying tweet position')

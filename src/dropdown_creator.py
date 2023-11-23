@@ -1,4 +1,4 @@
-import dash_core_components as dcc
+from dash import dcc
 from src.controller import Controller
 
 class DropdownCreator:
@@ -28,7 +28,7 @@ class DropdownCreator:
         return dcc.Dropdown(
             id='country-dropdown',
             options=[{'label': country, 'value': country} for country in countries],
-            value='France'
+            value='US'
         )
     
     def create_bar_chart_dropdown(self):
@@ -37,3 +37,4 @@ class DropdownCreator:
             options=[{'label': 'Retweets', 'value': 'retweets'}, {'label': 'Likes', 'value': 'likes'}],
             value='likes'
         )
+    

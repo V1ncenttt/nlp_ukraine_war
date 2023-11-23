@@ -45,6 +45,9 @@ class Model:
         blob = TextBlob(tweet)
         return blob.sentiment.polarity
 
+    def get_all_countries(self) -> list:
+        return self.data["country"].unique().tolist()
+        
     def get_average_polarity_for_country(self, country: str) -> float:
         """
         Calculate the average polarity per country.

@@ -66,8 +66,7 @@ class Controller:
         """
         return list(self.models.keys())
 
-    def get_all_countries(self) -> list:
-        return []
+    
 
     def generate_wordcloud(self, date: str) -> bytes:
         """
@@ -185,7 +184,34 @@ class Controller:
             return model.sort_retweets()
         else:
             return model.sort_by_favourite()
+
+    def get_all_countries(self) -> list:
+        """
+        Retrieves the list of all countries in the dataset.
+
+        Returns:
+        list: A list of strings representing the countries in the dataset.
+        """
+        countries = []
+        for date in self.models:
+            countries = countries + self.models[date].get_all_countries()
+        return list(set(countries))
+    
+    def plot_country_polarity_time(self, country: str):
+
+        dates = list(self.models.keys())
+
+        dates[2] = '06/05'
+        dates = [date + "/2022" for date in dates]
+        polarities = [self.models[date].get_average_polarity_for_country(country) for date in self.models]
+
         
+        df = pd.DataFrame({'Date': dates, 'Polarity': polarities})
+        # Convert 'Date' column to datetime format
+        df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y")
+
+        return df
+
     def get_choropleth_data(self, date: str, is_pro_russian:str) -> tuple:
         """
         Generates a DataFrame containing the polarity of each country.

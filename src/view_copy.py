@@ -59,7 +59,7 @@ class View:
                 ]),
                 html.Div([
                         DropdownCreator().create_country_dropdown(self.controller.get_all_countries()),
-                        Visualizor().create_line_chart(None)
+                        html.Div(id='div-line-chart')
                 ])
             ], style=body_style)
         ])
@@ -115,11 +115,11 @@ class View:
 
         
         @self.app.callback(
-        Output('line-chart', 'figure'),
+        Output('div-line-chart', 'children'),
         [Input('country-dropdown', 'value')]
         )
         def update_line_chart(selected_country):
-            data = None
+            data = self.controller.plot_country_polarity_time(selected_country)
             figure = Visualizor().create_line_chart(data)
             return figure
 
