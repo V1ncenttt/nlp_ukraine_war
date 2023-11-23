@@ -7,22 +7,12 @@ from wordcloud import WordCloud, ImageColorGenerator
 from PIL import Image
 import numpy as np
 from io import BytesIO
-from src.model import Model
 from src.controller import Controller
-
+from src.header import Header
+from src.visualizor import Visualizor
+from src.dropdown_creator import DropdownCreator
 # Loading the database from the 'Model' class
 
-
-banner_style = {
-    "backgroundColor": "white",
-    "padding": "10px",
-    "textAlign": "center",
-    "display": "flex",
-    "color": "black",
-    "fontSize": "24px",
-    "fontFamily": "Open Sans, sans-serif",
-    "font-weight": "700",
-}
 
 body_style = {
     "backgroundColor": "#f8f8f8",  # Light gray background
@@ -36,104 +26,125 @@ external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
 ]
 
-
-
+    
 class View:
     def __init__(self) -> None:
-        self.controller = Controller()
-        self.app = DashView(self.controller)
-
-    
-    def run(self):
-        self.app.run()
-    
-class DashView:
-    def __init__(self, controller) -> None:
         self.app = dash.Dash(__name__)
-        self.controller = controller
+        self.controller = Controller()
         self.setup_layout()
         self.setup_callbacks()
-
-    def setup_layout(self) -> None:
-        model_options = [{'label': model_name, 'value': model_name} for model_name in self.controller.get_dates()]
-
-        self.app.layout = html.Div([
-            html.Div([
-                html.Div([
-                    html.Div([
-                        html.Img(src=dash.get_asset_url("ukr_flag.png"),
-                                 style={'height': '50px', 'border-radius': '10px', 'marginRight': '10px'}),
-                        html.Div("Ukrainian War: a global opinion analysis using Twitter data",
-                                 style={'fontSize': '24px', 'padding-top': '10px'})
-                    ], style=banner_style),
-                    dcc.Dropdown(
-                        id='model-dropdown',
-                        options=model_options,
-                        value=self.controller.get_dates()[0],
-                        style={'width': '50%'}
-                    ),
-                ], style=body_style),
-                
-                html.Div(id='graph-container'),  # Container for the graph
-                
-                html.Div([
-                    dcc.Dropdown(
-                        id='sample-dropdown',
-                        options=[
-                            {'label': 'WordCloud Hashtags', 'value': 'wordcloud'},
-                            {'label': 'WordCloud Nouns', 'value': 'wordcloud2'},
-                        ],
-                        value='wordcloud'
-                    ),
-                    html.Img(id='wordcloud-image', style={'width': '100%', 'height': 'auto'}),
-                ], style=body_style),
-            ], style={'display': 'flex', 'flex-direction': 'column'}),
-        ])
-
-    def create_choropleth(self, date):
-        loc, position, countries = self.controller.get_polarity_cloropleth_data(date)
-        fig = go.Figure(
-        data=go.Choropleth(
-            locations=loc,  
-            z=position,  
-            locationmode="ISO-3", 
-            colorscale="Reds",
-            autocolorscale=False,
-            text=[f"{country}: {value}" for country, value in zip(countries, position)], 
-            marker_line_color="white",
-            colorbar_title="Number of pro-russian tweets",
-            )
-        )
-        fig.update_layout(
-            margin={"r": 0, "t": 0, "l": 0, "b": 0},  # Reduce margins to use more space
-            geo=dict(
-                projection_scale=5,  # Adjust scale of the map
-                center=dict(lat=0, lon=0),  # Adjust center
-            )
-        )
-        
-        return fig
-
-    def setup_callbacks(self):
-        @self.app.callback(
-            [Output('wordcloud-image', 'src'),
-             Output('graph-container', 'children')],
-            [Input('sample-dropdown', 'value'),
-             Input('model-dropdown', 'value')]
-        )
-        def update_visualization(selected_value, date):
-            print((date, selected_value))
-            wordcloud_image = None
-            graph_container = dcc.Graph(id='graph', figure=self.create_choropleth(date))
-
-            if selected_value == 'wordcloud':
-                wordcloud_image = self.controller.generate_wordcloud(date)
-            elif selected_value == 'wordcloud2':
-                wordcloud_image = self.controller.generate_classical_wordcloud(date)
-
-            return wordcloud_image, graph_container
 
     def run(self):
         self.app.run_server(debug=False)
 
+    def setup_layout(self):
+        self.app.layout =  html.Div([
+            Header().create_header(), # Header of the website
+            html.Div([ # Body
+                html.Div([
+                    DropdownCreator().create_date_dropdown(self.controller.get_dates()),
+                    html.Div([
+                        DropdownCreator().create_choropleth_option_dropdown(),
+                        html.Div(id='choropleth-div')
+                    ]),
+                    html.Div([
+                        DropdownCreator().create_bar_chart_dropdown(),
+                        html.Div(id='barchart-div')
+                    ]),
+                    html.Div([
+                        DropdownCreator().create_wordcloud_dropdown('wordcloud-dropdown'),
+                        html.Img(id='wordcloud', style={'width': '100%', 'height': 'auto'})
+                    ]),
+                ]),
+                html.Div([
+                        DropdownCreator().create_country_dropdown(self.controller.get_all_countries()),
+                        html.Div(id='div-line-chart')
+                ])
+            ], style=body_style)
+        ])
+        
+    def setup_callbacks(self):
+        """
+        Set up the Dash callbacks for interactive updates.
 
+        Includes callbacks for updating choropleth map, bar chart, wordcloud, and line chart.
+        """
+        @self.app.callback(
+            Output('choropleth-div', 'children'),
+            [Input('date-dropdown', 'value'), Input('choropleth-option-dropdown', 'value')]
+        )
+        def update_choropleth(selected_date, selected_option):
+            """
+            Update the choropleth map based on user-selected date and choropleth option.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected choropleth option from the dropdown.
+
+            Returns:
+            - dcc.Graph: Dash component representing the updated choropleth map.
+            """
+            print(selected_date, selected_option)
+            figure = Visualizor().create_choropleth_map(self.controller.get_choropleth_data(selected_date, selected_option))
+            return figure
+
+        @self.app.callback(
+            Output('barchart-div', 'children'),
+            [Input('date-dropdown', 'value'), Input('bar-chart-dropdown', 'value')]
+        )
+        def update_bar_chart(selected_date, selected_option):
+            """
+            Update the bar chart based on user-selected date and bar chart option.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected bar chart option from the dropdown.
+
+            Returns:
+            - dcc.Graph: Dash component representing the updated bar chart.
+            """
+            data = self.controller.get_barchart_data(selected_date, selected_option)
+            print(data)
+            figure = Visualizor().create_bar_chart(data)
+            return figure
+
+        @self.app.callback(
+            Output('wordcloud', 'src'),
+            [Input('date-dropdown', 'value'), Input('wordcloud-dropdown', 'value')]
+        )
+        def update_wordcloud(selected_date, selected_option):
+            """
+            Update the wordcloud image based on user-selected date and wordcloud type.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected wordcloud type from the wordcloud dropdown.
+
+            Returns:
+            - str: The source URL of the wordcloud image to be displayed.
+            """
+            wordcloud_image = None
+
+            # Check the selected wordcloud type and generate the corresponding wordcloud image
+            if selected_option == 'wordcloud1':
+                wordcloud_image = self.controller.generate_wordcloud(selected_date)
+            elif selected_option == 'wordcloud2':
+                wordcloud_image = self.controller.generate_classical_wordcloud(selected_date)
+
+            # Return the generated wordcloud image source URL
+            return wordcloud_image
+
+        @self.app.callback(
+        Output('div-line-chart', 'children'),
+        [Input('country-dropdown', 'value')]
+        )
+        def update_line_chart(selected_country):
+            data = self.controller.plot_country_polarity_time(selected_country)
+            figure = Visualizor().create_line_chart(data)
+            return figure
+
+
+
+if __name__ == "__main__":
+    view = View()
+    view.run()
