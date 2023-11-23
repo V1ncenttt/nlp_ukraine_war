@@ -177,6 +177,8 @@ class Model:
         """
         This function returns a list of the 10 most active countries
         of the studied DataFrame.
+
+        This function will be usefull if we add functionalities to our App that could potentially happen in a future update of our MVP.
         """
         # List of each country's number of tweets
 
@@ -195,6 +197,8 @@ class Model:
 
         Returns :
             String : "List of the most active users :" and the list.
+
+        This function will be usefull if we add functionalities to our App that could potentially happen in a future update of our MVP.
         """
         # List of each user's number of tweets
         counts = self.data["username"].value_counts()
@@ -211,6 +215,8 @@ class Model:
 
         Returns :
             The two top 5 of countries (lists) for Ukraine and Russia
+
+        This function will be usefull if we add functionalities to our App that could potentially happen in a future update of our MVP.
         """
         # Creates 2 dataframes : one for each position (Ukraine or Russia)
         pro_ukraine_df = self.data[self.data["position"] == 2]
