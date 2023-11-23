@@ -198,7 +198,7 @@ class Controller:
         if option == "retweets":
             return model.sort_retweets()
         else:
-            return model.sort_by_favourite()
+            return model.sort_by_favorite()
 
     def get_all_countries(self) -> list:
         """

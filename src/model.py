@@ -22,7 +22,6 @@ class Model:
         print("Loading dataset...")
         self.data = pd.read_csv(dataset, engine='python')
         self.data['text'] = self.data['text'].astype(str)
-        self.loadModel()
         self.add_polarity()
         self.add_sadness()
         self.extract_hashtags()
