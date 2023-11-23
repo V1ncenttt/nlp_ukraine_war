@@ -1,4 +1,4 @@
-from src.view import View
+from src.view_copy import View
 
 
 if __name__ == "__main__":

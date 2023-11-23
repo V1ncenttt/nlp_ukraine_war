@@ -49,12 +49,12 @@ class View:
                         html.Div(id='choropleth-div')
                     ]),
                     html.Div([
-                        DropdownCreator().create_option_dropdown('bar-chart-dropdown'),
+                        DropdownCreator().create_wordcloud_dropdown('bar-chart-dropdown'),
                         Visualizor().create_bar_chart(None)
                     ]),
                     html.Div([
-                        DropdownCreator().create_option_dropdown('wordcloud-dropdown'),
-                        Visualizor().create_wordcloud(None)
+                        DropdownCreator().create_wordcloud_dropdown('wordcloud-dropdown'),
+                        html.Img(id='wordcloud', style={'width': '100%', 'height': 'auto'})
                     ]),
                 ]),
                 html.Div([
@@ -86,13 +86,18 @@ class View:
     
 
         @self.app.callback(
-        Output('wordcloud', 'figure'),
+        Output('wordcloud', 'src'),
         [Input('date-dropdown', 'value'), Input('wordcloud-dropdown', 'value')]
         )
         def update_wordcloud(selected_date, selected_option):
-            data = None
-            figure = Visualizor().create_wordcloud(data)
-            return figure
+            wordcloud_image = None
+
+            if selected_option == 'wordcloud1':
+                wordcloud_image = self.controller.generate_wordcloud(selected_date)
+            elif selected_option == 'wordcloud2':
+                wordcloud_image = self.controller.generate_classical_wordcloud(selected_date)
+
+            return wordcloud_image
         
         @self.app.callback(
         Output('line-chart', 'figure'),

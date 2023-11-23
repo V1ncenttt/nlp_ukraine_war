@@ -33,6 +33,7 @@ class Visualizor:
         return dcc.Graph(id='bar-chart')
 
     def create_wordcloud(self, data):
+        
         return dcc.Graph(id='wordcloud')
 
     def create_line_chart(self, data):
