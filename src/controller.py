@@ -12,10 +12,6 @@ import nltk
 import base64
 import spacy
 from spacy.lang.es.stop_words import STOP_WORDS as es_stopwords
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
 import plotly.express as px
 
 
@@ -83,8 +79,7 @@ class Controller:
         """
         return list(self.models.keys())
 
-    def get_all_countries(self) -> list:
-        return []
+    
 
     def generate_wordcloud(self, date: str) -> bytes:
         """
@@ -197,9 +192,42 @@ class Controller:
         img_src = f"data:image/png;base64,{base64.b64encode(img_binary).decode()}"
         return img_src
 
-    def get_polarity_cloropleth_data(
-        self, date: str, is_pro_russian: bool = True
-    ) -> tuple:
+    def get_barchart_data(self, date: str, option: str) -> dict:
+        model=self.models[date]
+        print(option)
+        if option == "retweets":
+            return model.sort_retweets()
+        else:
+            return model.sort_by_favourite()
+
+    def get_all_countries(self) -> list:
+        """
+        Retrieves the list of all countries in the dataset.
+
+        Returns:
+        list: A list of strings representing the countries in the dataset.
+        """
+        countries = []
+        for date in self.models:
+            countries = countries + self.models[date].get_all_countries()
+        return list(set(countries))
+    
+    def plot_country_polarity_time(self, country: str):
+
+        dates = list(self.models.keys())
+
+        dates[2] = '06/05'
+        dates = [date + "/2022" for date in dates]
+        polarities = [self.models[date].get_average_polarity_for_country(country) for date in self.models]
+
+        
+        df = pd.DataFrame({'Date': dates, 'Polarity': polarities})
+        # Convert 'Date' column to datetime format
+        df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y")
+
+        return df
+
+    def get_choropleth_data(self, date: str, is_pro_russian:str) -> tuple:
         """
         Generates a DataFrame containing the polarity of each country.
 
@@ -209,9 +237,12 @@ class Controller:
         Returns:
                 pandas.DataFrame: The DataFrame containing the polarity of each country.
         """
-        is_pro_russian=False
+        
+
         if is_pro_russian=="option1":
             is_pro_russian=True
+        else:
+            is_pro_russian=False
 
         model = self.models[date]
         return model.get_number_pro_ukr_rus(is_pro_russian)
@@ -235,18 +266,7 @@ class Controller:
         plt.ylabel('Average polarity of the tweets from the country')
         plt.show()
         
-    def favourite_users(self, date: str) -> list:
-        """
-        Retrieves a sorted list of users based on their 'favourite' count for a given date.
 
-        Args:
-        date (str): The date for which the favourite users should be retrieved.
-
-        Returns:
-        list: A list of users sorted by their 'favourite' count.
-        """
-        model=self.models[date]
-        return model.sort_by_favourite()
     
 
 

@@ -12,6 +12,9 @@ class TestController(unittest.TestCase):
         controller2 = Controller()
         self.assertEqual(self.controller, controller2)
 
+    def test_get_all_countries(self):
+        pass
+    
     def test_get_dates(self):
         # Test the get_dates method
         expected_dates = [

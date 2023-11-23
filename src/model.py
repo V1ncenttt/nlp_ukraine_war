@@ -21,7 +21,6 @@ class Model:
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
         self.data = pd.read_csv(dataset, engine='python')
-        self.data = self.data.sample(n=10)
         self.data['text'] = self.data['text'].astype(str)
         self.loadModel()
         self.add_polarity()
@@ -47,6 +46,9 @@ class Model:
         blob = TextBlob(tweet)
         return blob.sentiment.polarity
 
+    def get_all_countries(self) -> list:
+        return self.data["country"].unique().tolist()
+        
     def get_average_polarity_for_country(self, country: str) -> float:
         """
         Calculate the average polarity per country.
@@ -90,14 +92,12 @@ class Model:
 
         # Sort DataFrame based on 'favorite_count' in descending order
         df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
-        print(df_sorted)
+        df_sorted['count'] = df_sorted['favorite_count']
 
-        # Extract the usernames and favorite counts of the top 15 users with the most favorite tweets
-        top_users = df_sorted[["username", "favorite_count"]].head(15)
+        # Extract the usernames of the top 15 users with the most favorite tweets
+        list_sorted_id = df_sorted[["username", "count"]].head(10)
 
-        # Print list of sorted IDs by favorite tweets
-        list_sorted_id = top_users["username"].tolist()
-        print("List sorted IDs by favorite tweets:", list_sorted_id)
+        return list_sorted_id
 
         # Convert the top_users DataFrame to a dictionary
         user_likes_dict = top_users.set_index("username")["favorite_count"].to_dict()
@@ -118,11 +118,12 @@ class Model:
              None
         """
 
-        df_sort = self.data.sort_values(by="retweetcount", ascending=False)
-        print(df_sort)
-        # Extract the usernames of the top 20 users with the most retweets
-        list_sorted_name = df_sort["username"].tolist()[:20]
-        print("List of users with the most retweets:", list_sorted_name)
+        df_sorted = self.data.sort_values(by="retweetcount", ascending=False)
+        df_sorted['count'] = df_sorted['retweetcount']
+
+        # Extract the usernames of the top 10 users with the most retweets
+        top_10_retweets= df_sorted[["username", "count"]].head(10)
+        return top_10_retweets
 
     def most_active_countries(self):
         """
@@ -242,9 +243,10 @@ class Model:
             3. List of country names.
         """
         camp = 2
+
         if is_pro_russian:
             camp = 1
-
+        
         # Grouping data by ISO and country, and counting the instances of the specified stance
         polarity_df = (
             self.data.groupby(["ISO", "country"])["conflict_position"]
