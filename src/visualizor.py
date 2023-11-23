@@ -30,9 +30,15 @@ class Visualizor:
         return dcc.Graph(id='choropleth-map', figure=fig)
 
     def create_bar_chart(self, data):
-        return dcc.Graph(id='bar-chart')
 
-    def create_wordcloud(self, data):
+        
+        fig = px.bar(data, x='username', y='count')
+        fig.update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},  # Reduce margins to use more space
+        )
+        return dcc.Graph(id='bar-chart', figure=fig)
+
+    def create_wordcloud(self, wc):
         return dcc.Graph(id='wordcloud')
 
     def create_line_chart(self, data):

@@ -49,8 +49,8 @@ class View:
                         html.Div(id='choropleth-div')
                     ]),
                     html.Div([
-                        DropdownCreator().create_option_dropdown('bar-chart-dropdown'),
-                        Visualizor().create_bar_chart(None)
+                        DropdownCreator().create_bar_chart_dropdown(),
+                        html.Div(id='barchart-div')
                     ]),
                     html.Div([
                         DropdownCreator().create_option_dropdown('wordcloud-dropdown'),
@@ -76,11 +76,12 @@ class View:
             return figure
 
         @self.app.callback(
-        Output('bar-chart', 'figure'),
+        Output('barchart-div', 'children'),
         [Input('date-dropdown', 'value'), Input('bar-chart-dropdown', 'value')]
         )
         def update_bar_chart(selected_date, selected_option):
-            data = None
+            data = self.controller.get_barchart_data(selected_date, selected_option)
+            print(data)
             figure = Visualizor().create_bar_chart(data)
             return figure
     

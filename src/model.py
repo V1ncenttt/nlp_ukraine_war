@@ -20,7 +20,7 @@ class Model:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         print("Loading dataset...")
-        self.data = pd.read_csv(dataset, engine='python').sample(100)
+        self.data = pd.read_csv(dataset, engine='python')
         self.data['text'] = self.data['text'].astype(str)
         self.add_polarity()
         self.add_sadness()
@@ -87,11 +87,12 @@ class Model:
 
         # Sort DataFrame based on 'favorite_count' in descending order
         df_sorted = self.data.sort_values(by="favorite_count", ascending=False)
-        print(df_sorted)
+        df_sorted['count'] = df_sorted['favorite_count']
 
         # Extract the usernames of the top 15 users with the most favorite tweets
-        list_sorted_id = df_sorted["username"].tolist()[:15]
-        print("List sorted IDs by favorite tweets:", list_sorted_id)
+        list_sorted_id = df_sorted[["username", "count"]].head(10)
+
+        return list_sorted_id
 
     def sort_retweets(self):
         """
@@ -106,11 +107,12 @@ class Model:
              None
         """
 
-        df_sort = self.data.sort_values(by="retweetcount", ascending=False)
-        print(df_sort)
-        # Extract the usernames of the top 20 users with the most retweets
-        list_sorted_name = df_sort["username"].tolist()[:20]
-        print("List of users with the most retweets:", list_sorted_name)
+        df_sorted = self.data.sort_values(by="retweetcount", ascending=False)
+        df_sorted['count'] = df_sorted['retweetcount']
+
+        # Extract the usernames of the top 10 users with the most retweets
+        top_10_retweets= df_sorted[["username", "count"]].head(10)
+        return top_10_retweets
 
     def most_active_countries(self):
         """
