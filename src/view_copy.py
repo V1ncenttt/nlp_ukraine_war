@@ -7,7 +7,6 @@ from wordcloud import WordCloud, ImageColorGenerator
 from PIL import Image
 import numpy as np
 from io import BytesIO
-
 from src.controller import Controller
 from src.header import Header
 from src.visualizor import Visualizor

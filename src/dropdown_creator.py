@@ -13,7 +13,7 @@ class DropdownCreator:
     def create_choropleth_option_dropdown(self):
         return dcc.Dropdown(
             id='choropleth-option-dropdown',
-            options=[{'label': 'Option 1', 'value': 'option1'}, {'label': 'Option 2', 'value': 'option2'}],
+            options=[{'label': 'Pro Russian Tweet', 'value': 'option1'}, {'label': 'Pro Ukrainian tweet', 'value': 'option2'}],
             value='option1'
         )
         
@@ -34,6 +34,7 @@ class DropdownCreator:
     def create_bar_chart_dropdown(self):
         return dcc.Dropdown(
             id='bar-chart-dropdown',
-            options=[{'label': 'Retweets', 'value': 'retweets'}, {'label': 'Likes', 'value': 'likes'}],
+            options=[{'label': 'Retweets', 'value': 'retweets'}, {'label': 'Likes (in thousands)', 'value': 'likes'}],
             value='likes'
         )
+        
