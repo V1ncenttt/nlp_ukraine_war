@@ -53,8 +53,8 @@ class View:
                         html.Div(id='barchart-div')
                     ]),
                     html.Div([
-                        DropdownCreator().create_option_dropdown('wordcloud-dropdown'),
-                        Visualizor().create_wordcloud(None)
+                        DropdownCreator().create_wordcloud_dropdown('wordcloud-dropdown'),
+                        html.Img(id='wordcloud', style={'width': '100%', 'height': 'auto'})
                     ]),
                 ]),
                 html.Div([
@@ -86,14 +86,33 @@ class View:
             return figure
     
 
+            
         @self.app.callback(
-        Output('wordcloud', 'figure'),
+        Output('wordcloud', 'src'),
         [Input('date-dropdown', 'value'), Input('wordcloud-dropdown', 'value')]
         )
         def update_wordcloud(selected_date, selected_option):
-            data = None
-            figure = Visualizor().create_wordcloud(data)
-            return figure
+            """
+            Update the wordcloud image based on user-selected date and wordcloud type.
+
+            Parameters:
+            - selected_date (str): The selected date from the date dropdown.
+            - selected_option (str): The selected wordcloud type from the wordcloud dropdown.
+
+            Returns:
+            - str: The source URL of the wordcloud image to be displayed.
+            """
+            wordcloud_image = None
+
+            # Check the selected wordcloud type and generate the corresponding wordcloud image
+            if selected_option == 'wordcloud1':
+                wordcloud_image = self.controller.generate_wordcloud(selected_date)
+            elif selected_option == 'wordcloud2':
+                wordcloud_image = self.controller.generate_classical_wordcloud(selected_date)
+
+            # Return the generated wordcloud image source URL
+            return wordcloud_image
+
         
         @self.app.callback(
         Output('line-chart', 'figure'),

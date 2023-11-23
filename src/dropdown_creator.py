@@ -16,12 +16,12 @@ class DropdownCreator:
             options=[{'label': 'Option 1', 'value': 'option1'}, {'label': 'Option 2', 'value': 'option2'}],
             value='option1'
         )
-
-    def create_option_dropdown(self, id):
+        
+    def create_wordcloud_dropdown(self,id):
         return dcc.Dropdown(
             id=id,
-            options=[{'label': 'Option 1', 'value': 'option1'}, {'label': 'Option 2', 'value': 'option2'}],
-            value='option1'
+            options=[{'label': 'Hashtags Wordcloud', 'value': 'wordcloud1'}, {'label': 'Nouns Wordcloud', 'value': 'wordcloud2'}],
+            value='wordcloud1'
         )
 
     def create_country_dropdown(self, countries):
