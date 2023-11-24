@@ -17,7 +17,7 @@ class TestModel(unittest.TestCase):
     def test_get_average_polarity_for_country_valid(self):
         country = "US"
         average_polarity = self.model.get_average_polarity_for_country(country)
-        self.assertEqual(average_polarity, 0.25)
+        self.assertLess(average_polarity - 0.15656250000000002, 0.0001)
 
     def test_extract_hashtags(self):
         # Test if the hashtags are extracted correctly

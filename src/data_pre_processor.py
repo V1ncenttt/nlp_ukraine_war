@@ -31,7 +31,6 @@ class DataPreProcessor:
 
     def __init__(self, dataset: pd.DataFrame) -> None:
         self.data = pd.read_csv(dataset, low_memory=False).sample(20000)
-        self.data = pd.read_csv(dataset, low_memory=False)
 
         self.route = dataset
         self.cache = {
@@ -204,7 +203,7 @@ class DataPreProcessor:
         This method uses the geocode function to convert location names in the DataFrame
         to country ISO codes, storing the results in a new 'country' column.
         """
-
+        self.data["ISO"] = self.data["ISO"].astype(str)
         self.data["country"] = self.data["ISO"].swifter.apply(lambda x: self.iso2_to_name(x))
 
     @lru_cache(maxsize=None)
